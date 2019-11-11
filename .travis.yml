@@ -1,0 +1,15 @@
+language: go
+go:
+- 1.12.x
+before_install:
+- go get github.com/mitchellh/gox
+- go get github.com/gobuffalo/packr/packr
+- packr
+install:
+- go get -t -v ./...
+script:
+- export GIT_VERSION=`git describe --tags`
+- diff -u <(echo -n) <(gofmt -d .)
+- go vet $(go list ./... | grep -v /vendor/)
+- go test -v -race ./...
+- gox -osarch="linux/arm linux/amd64 windows/amd64 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
