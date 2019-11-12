@@ -240,6 +240,39 @@
             font-family: 'Lato', sans-serif;
         }
 
+        .btn-primary {
+            background-color: #d99e82;
+            border: none;
+            border-radius: 0;
+        }
+
+        .fa-spinner {
+            color: #c8775e;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:active {
+            background-color: #c8775e !important;
+        }
+
+        .btn-primary:focus {
+            box-shadow: none;
+        }
+
+        .page-link {
+            color: #c8775e;
+        }
+
+        .page-link:hover {
+            color: #c8775e;
+        }
+
+        .page-item.active .page-link {
+            background-color: #d99e82;
+            border: none;
+            color: #fff;
+        }
+
         #title {
             font-family: 'Anton', sans-serif;
             font-size: 1.5rem;
@@ -251,14 +284,36 @@
             text-decoration: none;
             color: inherit;
         }
+
+        #update {
+            padding: 0.5rem;
+            color: #fff;
+            position: absolute;
+            right: 10px;
+        }
+
+        #update .fa-spinner{
+            color: #fff;
+        }
+
+        #top-bar {
+            box-shadow: 0px 2px 5px #000;
+        }
     </style>
 </head>
 
 <body>
-    <div class="bg-dark text-light sticky-top text-center py-1">
+
+    <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
         <a id="title" href="#">
             potatorrent
-            <img height="36px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
+            <img height="36px"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
+        </a>
+        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/releases" 
+            class="badge badge-dark my-1" data-toggle="tooltip" data-placement="left" 
+            title="Tienes la última versión">
+            <i class="fa fa-spinner fa-pulse"></i>
         </a>
     </div>
     <main class="py-4">
@@ -288,6 +343,7 @@
             <small id="search-results-info" class="text-muted"></small>
             <div id="search-results-container"></div>
             <nav id="search-results-pagination" class="my-1 fixed-bottom"></nav>
+
         </div>
     </main>
 
@@ -336,6 +392,18 @@
     <script>
 
         $(function () {
+            $.getJSON("/version")
+                .done(function (response) {
+                    if (!response)
+                        return;
+                    $('#update').html(response.current);
+                    if (response.current !== response.latest) {
+                        $('#update').prop('title', 'Hay una nueva versión disponible: ' + response.latest)
+                        $('#update').toggleClass('badge-dark badge-success')
+                    }
+                    $('#update').tooltip()
+                });
+
             $.getJSON("/options")
                 .done(function (response) {
                     if (!response)
@@ -350,8 +418,8 @@
                     });
                 });
 
-            $('#title').on('click', function() {
-                $("html, body").animate({scrollTop:0}, 500);
+            $('#title').on('click', function () {
+                $("html, body").animate({ scrollTop: 0 }, 500);
             })
 
             $('#subcategoria').select2({
@@ -450,7 +518,7 @@
                         ul.append('<li class="page-item' + (page == response.data.all ? ' disabled' : '') + '"><a class="page-link" data-page="' + (page + 1) + '" href="#"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>')
                         if (response.data.all > 9)
                             ul.append('<li class="page-item' + (page == response.data.all ? ' disabled' : '') + '"><a class="page-link" data-page="' + response.data.all + '" href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>')
-                        $('#search-results-pagination').html(ul).animate({ bottom: "0"}, 500);
+                        $('#search-results-pagination').html(ul).animate({ bottom: "0" }, 500);
                         $('#search-results-pagination').find('.page-link').on('click', function (e) {
                             e.preventDefault();
                             var params = $('#search-container').data('params');
@@ -469,7 +537,7 @@
                         $cont.find('.torrent-fecha').text(t.torrentDateAdded)
                         $cont.find('.torrent-tamano').text(t.torrentSize)
                         $cont.find('.torrent-title').text(t.torrentName)
-                        $cont.find('.torrent-download').prop('href', '/download?id=' + t.torrentID + '&guid=' + t.guid)
+                        $cont.find('.torrent-download').prop('href', '/download?id=' + t.torrentID + '&guid=' + t.guid + '&name=' + encodeURIComponent(t.torrentName))
 
                         $('#search-results-container').append($cont)
                     }

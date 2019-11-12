@@ -9,6 +9,7 @@ install:
 - go get -t -v ./...
 script:
 - export GIT_VERSION=`git describe --tags`
+- printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
 - diff -u <(echo -n) <(gofmt -d .)
 - go vet $(go list ./... | grep -v /vendor/)
 - go test -v -race ./...
