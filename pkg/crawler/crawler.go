@@ -215,16 +215,25 @@ func optionsToMap(options []*html.Node) map[string]string {
 	for _, option := range options {
 		value, ok := findAttribute(option, "value")
 		if ok && value != "" {
-			m[value] = option.FirstChild.Data
+			m[value] = toUtf8(option.FirstChild.Data)
 		}
 	}
 	return m
 }
 
+func toUtf8(text string) string {
+	buffer := []byte(text)
+	buf := make([]rune, len(buffer))
+	for i, b := range buffer {
+		buf[i] = rune(b)
+	}
+	return string(buf)
+}
+
 func findAttribute(element *html.Node, name string) (string, bool) {
 	for _, a := range element.Attr {
 		if a.Key == name {
-			return a.Val, true
+			return toUtf8(a.Val), true
 		}
 	}
 	return "", false

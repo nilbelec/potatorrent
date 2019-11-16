@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="h-100">
+<html lang="es">
 
 <head>
     <!-- Required meta tags -->
@@ -240,10 +240,13 @@
             font-family: 'Lato', sans-serif;
         }
 
+        .btn {
+            border-radius: 0;
+        }
+
         .btn-primary {
             background-color: #d99e82;
             border: none;
-            border-radius: 0;
         }
 
         .fa-spinner {
@@ -273,6 +276,10 @@
             color: #fff;
         }
 
+        .badge {
+            border-radius: 0;
+        }
+
         #title {
             font-family: 'Anton', sans-serif;
             font-size: 1.5rem;
@@ -292,12 +299,20 @@
             right: 10px;
         }
 
-        #update .fa-spinner{
+        #update .fa-spinner {
             color: #fff;
         }
 
         #top-bar {
             box-shadow: 0px 2px 5px #000;
+        }
+
+        .torrent-title {
+            text-shadow: 0px 2px 2px #ccc;
+        }
+
+        .torrent-fecha {
+            font-size: .8rem;
         }
     </style>
 </head>
@@ -310,9 +325,8 @@
             <img height="36px"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
         </a>
-        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/releases" 
-            class="badge badge-dark my-1" data-toggle="tooltip" data-placement="left" 
-            title="Tienes la última versión">
+        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/releases"
+            class="badge badge-dark my-1" data-toggle="tooltip" data-placement="left" title="Tienes la última versión">
             <i class="fa fa-spinner fa-pulse"></i>
         </a>
     </div>
@@ -326,6 +340,11 @@
                 </div>
                 <div class="form-group col">
                     <select id="subcategoria" class="form-control" disabled>
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group col">
+                    <select id="calidad" class="form-control" disabled>
                         <option value=""></option>
                     </select>
                 </div>
@@ -343,14 +362,13 @@
             <small id="search-results-info" class="text-muted"></small>
             <div id="search-results-container"></div>
             <nav id="search-results-pagination" class="my-1 fixed-bottom"></nav>
-
         </div>
     </main>
 
     <div id="result-template-container" hidden>
         <div class="torrent row py-3 border-bottom">
-            <div class="col-auto">
-                <img class="torrent-img rounded" style="width: 80px;" />
+            <div class="col-auto my-auto">
+                <img class="torrent-img rounded" style="width: 90px;" />
             </div>
             <div class="col">
                 <div class="row h-100">
@@ -358,11 +376,16 @@
                         <span class="torrent-title"></span>
                     </div>
                     <div class="col-auto">
-                        <span title="Calidad o tipo de elemento" class="torrent-calidad badge badge-info"></span>
+                        <span title="Fecha de publicación" class="torrent-fecha badge badge-dark"></span>
                     </div>
                     <div class="w-100"></div>
-                    <div class="col align-self-end">
+                    <div class="col mt-auto">
+                        <span title="Calidad o tipo de elemento" class="torrent-calidad badge badge-info"></span>
+                    </div>
+                    <div class="col mt-auto text-right text-md-center">
                         <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning"></span>
+                    </div>
+                    <div class="col-12 col-md mt-3 mt-md-auto">
                         <a target="_blank" class="torrent-download btn btn-danger btn-sm float-right" href="#">
                             Descargar Torrent
                             <i class="fa fa-download" aria-hidden="true"></i>
@@ -409,9 +432,16 @@
                     if (!response)
                         return;
                     appendOptions('#categoria', response.categorias);
+                    appendOptions('#calidad', response.calidades);
                     $('#search-input').prop('disabled', false);
                     $('#categoria').prop('disabled', false).select2({
                         placeholder: 'Elige una categoría',
+                        width: '100%',
+                        allowClear: true,
+                        theme: 'bootstrap4'
+                    });
+                    $('#calidad').prop('disabled', false).select2({
+                        placeholder: 'Elige la calidad del contenido',
                         width: '100%',
                         allowClear: true,
                         theme: 'bootstrap4'
@@ -476,6 +506,7 @@
                 $('#search-container').data('params', {
                     categoria: $('#categoria').val(),
                     subcategoria: $('#subcategoria').val(),
+                    calidad: $('#calidad').val(),
                     q: $('#search-input').val(),
                     pg: 1,
                 });
@@ -536,7 +567,6 @@
                         $cont.find('.torrent-calidad').text(t.calidad)
                         $cont.find('.torrent-fecha').text(t.torrentDateAdded)
                         $cont.find('.torrent-tamano').text(t.torrentSize)
-                        $cont.find('.torrent-title').text(t.torrentName)
                         $cont.find('.torrent-download').prop('href', '/download?id=' + t.torrentID + '&guid=' + t.guid + '&name=' + encodeURIComponent(t.torrentName))
 
                         $('#search-results-container').append($cont)

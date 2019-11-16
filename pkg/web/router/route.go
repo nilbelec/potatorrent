@@ -25,10 +25,10 @@ func (rt *Route) handlesRequest(r *http.Request) bool {
 	if rt.Path != r.URL.Path {
 		return false
 	}
-	if rt.Method != r.Method {
+	if rt.Method != "" && rt.Method != r.Method {
 		return false
 	}
-	if !strings.Contains(r.Header.Get("Accept"), rt.Accepts) {
+	if rt.Accepts != "" && !strings.Contains(r.Header.Get("Accept"), rt.Accepts) {
 		return false
 	}
 	return true
