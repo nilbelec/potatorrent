@@ -44,7 +44,7 @@ func (h *Handler) searchTorrents(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response, _ := json.Marshal(sr)
+	response, err := json.Marshal(sr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

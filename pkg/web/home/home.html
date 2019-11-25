@@ -386,11 +386,48 @@
                         <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning"></span>
                     </div>
                     <div class="col-12 col-md mt-3 mt-md-auto">
-                        <a target="_blank" class="torrent-download btn btn-danger btn-sm float-right" href="#">
+                        <button type="button" class="torrent-download btn btn-danger btn-sm float-right">
                             Descargar Torrent
                             <i class="fa fa-download" aria-hidden="true"></i>
-                        </a>
+                        </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="password-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contraseña para descomprimir:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="password" class="bg-danger d-block p-3 text-center text-light"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="not-found-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        Parece que el fichero torrent ya no existe... :(
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -567,9 +604,34 @@
                         $cont.find('.torrent-calidad').text(t.calidad)
                         $cont.find('.torrent-fecha').text(t.torrentDateAdded)
                         $cont.find('.torrent-tamano').text(t.torrentSize)
-                        $cont.find('.torrent-download').prop('href', '/download?id=' + t.torrentID + '&guid=' + t.guid + '&name=' + encodeURIComponent(t.torrentName))
+                        $cont.find('.torrent-download').data('id', t.torrentID).data('guid', t.guid)
 
                         $('#search-results-container').append($cont)
+
+                        $cont.find('.torrent-download').on('click', function () {
+                            const $btn = $(this);
+                            $btn.prop('disabled', true);
+                            const innerHTML = $btn.html();
+                            const id = $btn.data('id');
+                            const guid = $btn.data('guid');
+
+                            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...');
+                            $.getJSON('/download', { id: id, guid: guid })
+                                .done(function (response) {
+                                    if (!response || !response.url) {
+                                        $('#not-found-modal').modal('show');
+                                        return;
+                                    }
+                                    window.open(response.url);
+                                    if (response.password) {
+                                        $('#password-modal #password').text(response.password);
+                                        $('#password-modal').modal('show');
+                                    }
+                                }).always(function () {
+                                    $btn.prop('disabled', false);
+                                    $btn.html(innerHTML);
+                                })
+                        })
                     }
                 })
             }

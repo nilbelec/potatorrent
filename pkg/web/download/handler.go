@@ -1,10 +1,9 @@
 package download
 
 import (
+	"encoding/json"
 	"net/http"
-	"strings"
 
-	"github.com/kennygrant/sanitize"
 	"github.com/nilbelec/potatorrent/pkg/crawler"
 	"github.com/nilbelec/potatorrent/pkg/web/router"
 )
@@ -22,29 +21,23 @@ func NewHandler(c *crawler.Crawler) *Handler {
 // Routes return the routes the download handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/download", Method: "GET", HandlerFunc: h.downloadTorrent},
+		router.Route{Path: "/download", Method: "GET", Accepts: "application/json", HandlerFunc: h.downloadTorrent},
 	}
 }
 
 func (h *Handler) downloadTorrent(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
 	id := r.URL.Query().Get("id")
-	name := r.URL.Query().Get("name")
-	bytes, err := h.c.Download(id, guid)
+	result, err := h.c.Download(id, guid)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Disposition", "attachment; filename="+prepareFilename(name)+".torrent")
-	w.Header().Set("Content-Type", "application/x-bittorrent")
-	w.Write(bytes)
-}
-
-func prepareFilename(s string) string {
-	filename := strings.TrimSpace(s)
-	filename = strings.ToLower(filename)
-	filename = strings.ReplaceAll(filename, "[www.descargas2020.org]", "")
-	filename = strings.ReplaceAll(filename, "[www.pctnew.org]", "")
-	filename = sanitize.Name(filename)
-	return filename
+	response, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(response)
 }

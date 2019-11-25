@@ -63,17 +63,23 @@ type SearchOptions struct {
 	Inon      map[string]string `json:"inon"`
 }
 
-// Crawler is an Amazon crawler
+type SearchTorrentResult struct {
+	Url      string `json:"url"`
+	Password string `json:"password"`
+}
+
+// Crawler is an Torrent crawler
 type Crawler struct {
 }
 
-// NewCrawler creates a new Amazon product crawler
+// NewCrawler creates a new torrent crawler
 func NewCrawler() *Crawler {
 	return &Crawler{}
 }
 
+const protocol = "https:"
 const baseURLWithoutProtocol = "//descargas2020.org"
-const baseURL = "https:" + baseURLWithoutProtocol
+const baseURL = protocol + baseURLWithoutProtocol
 const searchPageURL = baseURL + "/buscar"
 const searchURL = baseURL + "/get/result/"
 const subcategoriesURL = baseURL + "/d20/library/include/ajax/get_subcategory.php"
@@ -92,16 +98,16 @@ func (c *Crawler) Search(params url.Values) (*SearchResult, error) {
 	return &r, err
 }
 
-func (c *Crawler) Download(id string, path string) ([]byte, error) {
+func (c *Crawler) Download(id string, path string) (*SearchTorrentResult, error) {
 	url := baseURL + "/" + path
-	bytes, err := findTorrent(id, url)
+	result, err := findTorrent(id, url)
 	if err == nil {
-		return bytes, nil
+		return result, nil
 	}
 	return trySearchTorrent(id, url)
 }
 
-func trySearchTorrent(id string, url string) ([]byte, error) {
+func trySearchTorrent(id string, url string) (*SearchTorrentResult, error) {
 	pg := 1
 	for {
 		u := fmt.Sprint(url, "/pg/", pg)
@@ -111,7 +117,7 @@ func trySearchTorrent(id string, url string) ([]byte, error) {
 		}
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li")
 		if len(lis) == 0 {
-			return nil, errors.New("No se ha encontrado el torrent")
+			return &SearchTorrentResult{}, nil
 		}
 		for _, li := range lis {
 			dp := extractLiDownloadPage(li)
@@ -130,7 +136,7 @@ func extractLiDownloadPage(li *html.Node) string {
 	return href
 }
 
-func findTorrent(id string, url string) ([]byte, error) {
+func findTorrent(id string, url string) (*SearchTorrentResult, error) {
 	println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
@@ -141,7 +147,23 @@ func findTorrent(id string, url string) ([]byte, error) {
 	if len(match) == 0 {
 		return nil, errors.New("Unable to find the download link")
 	}
-	return getBytes("https:" + strings.Trim(match[0], "\""))
+	return &SearchTorrentResult{
+		Url:      protocol + strings.Trim(match[0], "\""),
+		Password: findPassword(url),
+	}, nil
+}
+
+func findPassword(url string) string {
+	doc, err := getAndParse(url)
+	if err != nil {
+		return ""
+	}
+	input := htmlquery.FindOne(doc, "//input[@id=\"txt_password\"]")
+	if input == nil {
+		return ""
+	}
+	password, _ := findAttribute(input, "value")
+	return password
 }
 
 func (c *Crawler) SearchOptions() (*SearchOptions, error) {
