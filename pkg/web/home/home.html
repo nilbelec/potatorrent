@@ -56,7 +56,6 @@
 
         .select2-search--dropdown .select2-search__field {
             border: 1px solid #ced4da;
-            border-radius: 0.25rem;
         }
 
         .select2-results__message {
@@ -79,7 +78,6 @@
         .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
             color: #343a40;
             border: 1px solid #bdc6d0;
-            border-radius: 0.2rem;
             padding: 0;
             padding-right: 5px;
             cursor: pointer;
@@ -129,7 +127,6 @@
         .select2-container--bootstrap4 .select2-selection {
             background-color: #fff;
             border: 1px solid #ced4da;
-            border-radius: 0.25rem;
             -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
             transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -249,6 +246,10 @@
             border: none;
         }
 
+        .form-control  {
+            border-radius: 0;
+        }
+
         .fa-spinner {
             color: #c8775e;
         }
@@ -356,7 +357,6 @@
                 </div>
             </div>
             <button type="button" id="search" class="btn btn-primary btn-block">Buscar</button>
-        </div>
         </div>
         <div class="container pt-3 pb-5" id="search-container">
             <small id="search-results-info" class="text-muted"></small>
@@ -586,7 +586,7 @@
                         ul.append('<li class="page-item' + (page == response.data.all ? ' disabled' : '') + '"><a class="page-link" data-page="' + (page + 1) + '" href="#"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>')
                         if (response.data.all > 9)
                             ul.append('<li class="page-item' + (page == response.data.all ? ' disabled' : '') + '"><a class="page-link" data-page="' + response.data.all + '" href="#"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>')
-                        $('#search-results-pagination').html(ul).animate({ bottom: "0" }, 500);
+                        $('#search-results-pagination').html(ul).stop(true).animate({ bottom: "0" }, 600);
                         $('#search-results-pagination').find('.page-link').on('click', function (e) {
                             e.preventDefault();
                             var params = $('#search-container').data('params');
