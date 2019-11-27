@@ -246,7 +246,7 @@
             border: none;
         }
 
-        .form-control  {
+        .form-control {
             border-radius: 0;
         }
 
@@ -315,19 +315,30 @@
         .torrent-fecha {
             font-size: .8rem;
         }
+
+        #schedules {
+            transition: 500ms ease-in-out;
+        }
+
+        #schedules:hover {
+            transform: scale(1.1);
+            color: #d99e82 !important;
+        }
     </style>
 </head>
 
 <body>
-
     <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
+        <button id="schedules" class="btn float-left p-0 text-light">
+            <i class="fa fa-2x fa-clock-o" aria-hidden="true"></i>
+        </button>
         <a id="title" href="#">
             potatorrent
             <img height="36px"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
         </a>
-        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/"
-            class="badge badge-dark my-1" data-toggle="tooltip" data-placement="left" title="Tienes la última versión">
+        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/" class="badge badge-dark my-1"
+            data-toggle="tooltip" data-placement="left" title="Tienes la última versión">
             <i class="fa fa-spinner fa-pulse"></i>
         </a>
     </div>
@@ -359,7 +370,14 @@
             <button type="button" id="search" class="btn btn-primary btn-block">Buscar</button>
         </div>
         <div class="container pt-3 pb-5" id="search-container">
-            <small id="search-results-info" class="text-muted"></small>
+            <div id="results-top-bar" style="display: none;">
+                <small id="search-results-info" class="text-muted"></small>
+                <button type="button" id="schedule-search" class="btn btn-secondary btn-sm float-right">
+                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                    Programar esta búsqueda
+                </button>
+                <div class="clearfix"></div>
+            </div>
             <div id="search-results-container"></div>
             <nav id="search-results-pagination" class="my-1 fixed-bottom"></nav>
         </div>
@@ -427,6 +445,64 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="schedule-search-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Programar nueva búsqueda</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <label class="col-sm-3">Categoría</label>
+                        <div class="col-sm-9">
+                            <span id="staticCategoria" class="badge badge-info"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3">Subcategoría</label>
+                        <div class="col-sm-9">
+                            <span id="staticSubcategoria" class="badge badge-info"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3">Calidad</label>
+                        <div class="col-sm-9">
+                            <span id="staticCalidad" class="badge badge-info"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3">Palabras</label>
+                        <div class="col-sm-9">
+                            <span id="staticPalabras" class="badge badge-info"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="schedule-add-folder" class="col-sm-3 col-form-label">Directorio</label>
+                        <div class="col-sm-9">
+                            <input type="text" required class="form-control" id="schedule-add-folder" placeholder="/Users/potatorrent/Downloads">
+                            <small class="form-text text-muted">¿En qué carpeta quieres que se descarguen los ficheros torrents?</small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="schedule-add-interval" class="col-sm-3 col-form-label">Intervalo</label>
+                        <div class="col-sm-9">
+                            <input type="number" required step="1" min="1" max="999999" class="form-control" id="schedule-add-interval" value="30">
+                            <small class="form-text text-muted">¿Cada cuántos minutos quieres comprobar si hay contenido nuevo?</small>
+                        </div>
+                    </div>
+                    <div id="schedule-add-error" class="alert alert-danger" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="schedule-search-save" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -542,13 +618,17 @@
             $('#search').on('click', function () {
                 $('#search-container').data('params', {
                     categoria: $('#categoria').val(),
+                    categoriaTexto: $('#categoria option:selected').text(),
                     subcategoria: $('#subcategoria').val(),
+                    subcategoriaTexto: $('#subcategoria option:selected').text(),
                     calidad: $('#calidad').val(),
+                    calidadTexto: $('#calidad option:selected').text(),
                     q: $('#search-input').val(),
                     pg: 1,
                 });
+                $('#results-top-bar').hide();
                 $('#search-results-info').empty();
-                $('#search-results-pagination').css('bottom', '-80px').empty();
+                $('#search-results-pagination').stop(true).css('bottom', '-80px').empty();
                 doSearch();
             });
 
@@ -557,12 +637,13 @@
                 var params = $('#search-container').data('params');
                 $.getJSON("/search", params).done(function (response) {
                     $('#search-results-container').empty()
+                    $('#results-top-bar').show();
                     if (!response || !response.success) {
-                        $('#search-results-container').html('<div class="alert alert-danger">Se ha producido un error...</div>')
+                        $('#search-results-container').html('<div class="alert alert-danger mt-2">Se ha producido un error...</div>')
                         return;
                     }
                     if (!response.data.items) {
-                        $('#search-results-container').html('<div class="alert alert-info">No se han encontrado resultados</div>')
+                        $('#search-results-container').html('<div class="alert alert-info mt-2">No se han encontrado resultados</div>')
                         return;
                     }
                     const page = params.pg;
@@ -635,7 +716,57 @@
                     }
                 })
             }
+
+            $('#schedule-search').on('click', function () {
+                $('#schedule-search-modal').modal('show');
+            })
+
+            $('#schedule-search-modal').on('show.bs.modal', function(){                const params = $('#search-container').data('params');
+                $('#staticCategoria').text(params.categoriaTexto ? params.categoriaTexto : "-");
+                $('#staticSubcategoria').text(params.subcategoriaTexto ? params.subcategoriaTexto : "-");
+                $('#staticCalidad').text(params.calidadTexto ? params.calidadTexto : "-");
+                $('#staticPalabras').text(params.q ? params.q : "-");
+
+                $('#schedule-add-folder').removeClass('is-invalid');
+                $('#schedule-add-interval').removeClass('is-invalid');
+            })
+
+            $('#schedule-search-save').on('click', function () {        
+                $('#schedule-add-folder').removeClass('is-invalid');
+                $('#schedule-add-interval').removeClass('is-invalid');
+                $('#schedule-add-error').hide();
+                let ok = true;
+
+                const params = $('#search-container').data('params');
+                const folder = $('#schedule-add-folder').val();
+                if (!folder) {
+                    $('#schedule-add-folder').addClass('is-invalid');
+                    ok = false;
+                }
+                const interval = $('#schedule-add-interval').val();
+                if (!isPositiveInteger(interval)) {
+                    $('#schedule-add-interval').addClass('is-invalid');
+                    ok = false;
+                }
+                if (!ok)
+                    return;
+                const url = '/schedule';
+                $.postJSON(url, {
+                    folder: folder,
+                    interval: Math.floor(Number(interval)),
+                    params: params,
+                }).done(function(response){
+
+                }).fail(function(){
+                    $('#schedule-add-error').html("Ups! Se ha producido un error...").show();
+                })
+            })
         });
+
+        function isPositiveInteger(str) {
+            var n = Math.floor(Number(str));
+            return n !== Infinity && String(n) === str && n >= 0;
+        }
 
     </script>
 </body>
