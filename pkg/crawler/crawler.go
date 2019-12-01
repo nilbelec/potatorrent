@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,10 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
+
+	"github.com/nilbelec/potatorrent/pkg/util"
 
 	"github.com/antchfx/htmlquery"
 	"golang.org/x/net/html"
@@ -41,13 +43,38 @@ type SearchData struct {
 }
 
 func (s *SearchData) GetTorrents() []Torrent {
-	var ts []Torrent
-	for k := range s.Torrents {
-		for _, t := range s.Torrents[k] {
-			ts = append(ts, t)
+	return sortTorrents(s.Torrents)
+}
+
+func sortTorrents(m map[string]map[string]Torrent) []Torrent {
+	result := make([]Torrent, 0)
+
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		keys2 := make([]string, 0, len(m[k]))
+		for k2 := range m[k] {
+			keys2 = append(keys2, k2)
+		}
+		sort.Strings(keys2)
+		for _, k2 := range keys2 {
+			result = append(result, m[k][k2])
 		}
 	}
-	return ts
+	return result
+}
+
+type SearchParams struct {
+	Categoria         string `json:"categoria"`
+	CategoriaTexto    string `json:"categoriaTexto"`
+	SubCategoria      string `json:"subcategoria"`
+	SubCategoriaTexto string `json:"subcategoriaTexto"`
+	Calidad           string `json:"calidad"`
+	CalidadTexto      string `json:"calidadTexto"`
+	Palabras          string `json:"q"`
 }
 
 type SearchResult struct {
@@ -87,8 +114,17 @@ const subcategoriesURL = baseURL + "/d20/library/include/ajax/get_subcategory.ph
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36"
 
 // Search returns a search result
-func (c *Crawler) Search(params url.Values) (*SearchResult, error) {
-	resp, err := postForm(searchURL, params)
+func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, error) {
+	resp, err := postForm(searchURL, url.Values{
+		"categoryIDR": {params.Categoria},
+		"categoryID":  {params.SubCategoria},
+		"idioma":      {},
+		"calidad":     {params.Calidad},
+		"ordenar":     {},
+		"inon":        {},
+		"s":           {params.Palabras},
+		"pg":          {page},
+	})
 	if err != nil {
 		return nil, errors.New("Error while requesting the search page: " + err.Error())
 	}
@@ -304,7 +340,7 @@ func parseFragment(resp *http.Response) ([]*html.Node, error) {
 }
 
 func get(url string) (resp *http.Response, err error) {
-	client := getClient()
+	client := util.NewHTTPClient()
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -314,7 +350,7 @@ func get(url string) (resp *http.Response, err error) {
 }
 
 func postForm(url string, data url.Values) (resp *http.Response, err error) {
-	client := getClient()
+	client := util.NewHTTPClient()
 	req, err := http.NewRequest("POST", url, strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
@@ -322,14 +358,4 @@ func postForm(url string, data url.Values) (resp *http.Response, err error) {
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("User-Agent", userAgent)
 	return client.Do(req)
-}
-
-func getClient() http.Client {
-	tlsConfig := &tls.Config{
-		InsecureSkipVerify: true,
-	}
-	transport := &http.Transport{
-		TLSClientConfig: tlsConfig,
-	}
-	return http.Client{Transport: transport}
 }

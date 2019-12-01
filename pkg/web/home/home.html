@@ -15,10 +15,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Anton&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anton&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css">
 
     <style>
         .select2-container--bootstrap4 .select2-selection--single {
@@ -277,8 +276,15 @@
             color: #fff;
         }
 
-        .badge {
-            border-radius: 0;
+        .badge,
+        .alert,
+        .modal-content,
+        .page-link {
+            border-radius: 0 !important;
+            border-top-left-radius: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
         }
 
         #title {
@@ -317,20 +323,45 @@
         }
 
         #schedules {
-            transition: 500ms ease-in-out;
+            position: relative;
+            transition: all .2s ease-in-out;
         }
 
         #schedules:hover {
             transform: scale(1.1);
             color: #d99e82 !important;
         }
+
+        #schedules .badge {
+            right: -.6rem;
+            position: absolute;
+            top: -0.2rem;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 50%;
+            display: block;
+            width: 19px;
+            height: 19px;
+        }
+
+        #schedules-table th,
+        #schedules-table td {
+            text-align: center;
+        }
+
+        .schedule-disabled {
+            opacity: 0.5;
+        }
+
     </style>
 </head>
 
 <body>
     <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
-        <button id="schedules" class="btn float-left p-0 text-light">
+        <button id="schedules" class="btn float-left p-0 text-light" data-toggle="tooltip" data-placement="right"
+            title="Búsquedas programadas">
             <i class="fa fa-2x fa-clock-o" aria-hidden="true"></i>
+            <span id="schedules-count" class="badge badge-primary" style="display: none;"></span>
         </button>
         <a id="title" href="#">
             potatorrent
@@ -451,7 +482,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="schedule-search-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="schedule-search-modal" data-backdrop="static" tabindex="-1" role="dialog"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -488,21 +520,92 @@
                     <div class="form-group row">
                         <label for="schedule-add-folder" class="col-sm-3 col-form-label">Directorio</label>
                         <div class="col-sm-9">
-                            <input type="text" required class="form-control" id="schedule-add-folder" placeholder="/Users/potatorrent/Downloads">
-                            <small class="form-text text-muted">¿En qué carpeta quieres que se descarguen los ficheros torrents?</small>
+                            <input type="text" required class="form-control" id="schedule-add-folder"
+                                placeholder="/Users/potatorrent/Downloads">
+                            <small class="form-text text-muted">¿En qué carpeta quieres que se descarguen los ficheros
+                                torrents?</small>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="schedule-add-interval" class="col-sm-3 col-form-label">Intervalo</label>
                         <div class="col-sm-9">
-                            <input type="number" required step="1" min="1" max="999999" class="form-control" id="schedule-add-interval" value="30">
-                            <small class="form-text text-muted">¿Cada cuántos minutos quieres comprobar si hay contenido nuevo?</small>
+                            <input type="number" required step="1" min="1" max="999999" class="form-control"
+                                id="schedule-add-interval" value="30">
+                            <small class="form-text text-muted">¿Cada cuántos minutos quieres comprobar si hay contenido
+                                nuevo?</small>
                         </div>
                     </div>
                     <div id="schedule-add-error" class="alert alert-danger" style="display: none;"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="schedule-search-save" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule-template-container" hidden>
+        <div class="schedule row py-1">
+            <div class="col-auto my-auto">
+                <img class="schedule-img rounded" style="width: 42px;" />
+            </div>
+            <div class="col">
+                <div class="row h-100 align-items-center">
+                    <div class="col">
+                        <span class="schedule-categoria badge badge-info has-tooltip" title="Categoría"></span>
+                        <span class="schedule-subcategoria badge badge-info has-tooltip" title="Subategoría"></span>
+                        <span class="schedule-calidad badge badge-info has-tooltip" title="Calidad"></span>
+                        <span class="schedule-palabras badge badge-info has-tooltip" title="Términos de búsqueda"></span>
+                    </div>
+                    <div class="col-auto">
+                        <strong>Lanzada</strong>
+                        <span class="schedule-last-execution badge badge-secondary">-</span>
+                        y cada
+                        <span class="schedule-interval badge badge-secondary">-</span>
+                        minutos
+                    </div>
+                    <div class="col-auto">
+                        <i class="schedule-folder text-warning fa fa-2x fa-folder"></i>
+                    </div>
+                    <div class="col-auto">
+                        <button class="schedule-enable btn btn-outline-primary has-tooltip" title="Volver a habilitar esta búsqueda">
+                            <i class="fa fa-play fa-fw"></i>
+                        </button>
+                        <button class="schedule-disable btn btn-outline-secondary has-tooltip" title="Deshabilitar esta búsqueda">
+                            <i class="fa fa-stop fa-fw"></i>
+                        </button>
+                        <button class="schedule-delete btn btn-outline-danger has-tooltip" title="Eliminar esta búsqueda">
+                            <i class="fa fa-trash fa-fw"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="schedules-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Búsquedas programadas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="schedules-none" class="alert alert-info">
+                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        No tienes ninguna búsqueda programada. Realiza una búsqueda y selecciona la opción de "Programar
+                        esta búsqueda"
+                    </div>
+                    <div id="schedules-results"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="schedules-refresh-btn" class="btn btn-primary">
+                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        Actualizar
+                    </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
@@ -513,6 +616,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/es.js"></script>
 
     <script>
         $.postJSON = function (url, data) {
@@ -521,6 +626,12 @@
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 method: 'POST'
+            });
+        }
+        $.delete = function (url) {
+            return $.ajax({
+                url: url,
+                method: 'DELETE'
             });
         }
     </script>
@@ -539,6 +650,8 @@
                     }
                     $('#update').tooltip()
                 });
+
+            $('#schedules').tooltip();
 
             $.getJSON("/options")
                 .done(function (response) {
@@ -609,9 +722,9 @@
                     })
             })
 
-            const parent = document.getElementById('result-template-container');
-            const template = parent.innerHTML;
-            parent.remove()
+            const torrentParentTemplate = document.getElementById('result-template-container');
+            const torrentTemplate = torrentParentTemplate.innerHTML;
+            torrentParentTemplate.remove()
 
             const loading = '<div class="text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>';
 
@@ -639,11 +752,11 @@
                     $('#search-results-container').empty()
                     $('#results-top-bar').show();
                     if (!response || !response.success) {
-                        $('#search-results-container').html('<div class="alert alert-danger mt-2">Se ha producido un error...</div>')
+                        $('#search-results-container').html('<div class="alert alert-danger mt-2"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>Se ha producido un error...</div>')
                         return;
                     }
                     if (!response.data.items) {
-                        $('#search-results-container').html('<div class="alert alert-info mt-2">No se han encontrado resultados</div>')
+                        $('#search-results-container').html('<div class="alert alert-info mt-2"><i class="fa fa-info-circle" aria-hidden="true"></i>No se han encontrado resultados</div>')
                         return;
                     }
                     const page = params.pg;
@@ -676,10 +789,11 @@
                             doSearch();
                         })
                     }
+                    const firstTorrent = true;
                     for (let k in response.data.torrents["0"]) {
                         const t = response.data.torrents["0"][k];
 
-                        const $cont = $(template);
+                        const $cont = $(torrentTemplate);
                         $cont.find('.torrent-img').prop('src', '/image?path=' + (t.imagen == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : t.imagen))
                         $cont.find('.torrent-title').text(t.torrentName)
                         $cont.find('.torrent-calidad').text(t.calidad)
@@ -693,10 +807,11 @@
                             const $btn = $(this);
                             $btn.prop('disabled', true);
                             const innerHTML = $btn.html();
+                            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...');
+
                             const id = $btn.data('id');
                             const guid = $btn.data('guid');
 
-                            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...');
                             $.getJSON('/download', { id: id, guid: guid })
                                 .done(function (response) {
                                     if (!response || !response.url) {
@@ -721,7 +836,8 @@
                 $('#schedule-search-modal').modal('show');
             })
 
-            $('#schedule-search-modal').on('show.bs.modal', function(){                const params = $('#search-container').data('params');
+            $('#schedule-search-modal').on('show.bs.modal', function () {
+                const params = $('#search-container').data('params');
                 $('#staticCategoria').text(params.categoriaTexto ? params.categoriaTexto : "-");
                 $('#staticSubcategoria').text(params.subcategoriaTexto ? params.subcategoriaTexto : "-");
                 $('#staticCalidad').text(params.calidadTexto ? params.calidadTexto : "-");
@@ -729,15 +845,20 @@
 
                 $('#schedule-add-folder').removeClass('is-invalid');
                 $('#schedule-add-interval').removeClass('is-invalid');
+                $('#schedule-add-error').hide();
             })
+            $('#schedule-search-modal').on('shown.bs.modal', function () {
+                $('#schedule-add-folder').select()
+            });
 
-            $('#schedule-search-save').on('click', function () {        
+            $('#schedule-search-save').on('click', function () {
                 $('#schedule-add-folder').removeClass('is-invalid');
                 $('#schedule-add-interval').removeClass('is-invalid');
                 $('#schedule-add-error').hide();
-                let ok = true;
 
                 const params = $('#search-container').data('params');
+
+                let ok = true;
                 const folder = $('#schedule-add-folder').val();
                 if (!folder) {
                     $('#schedule-add-folder').addClass('is-invalid');
@@ -750,23 +871,181 @@
                 }
                 if (!ok)
                     return;
+
+                const $btn = $(this);
+                $btn.prop('disabled', true);
+                const innerHTML = $btn.html();
+                $btn.html('<span class="spinner-border spinner-border-sm"></span> Buscando...');
+
                 const url = '/schedule';
                 $.postJSON(url, {
                     folder: folder,
                     interval: Math.floor(Number(interval)),
                     params: params,
-                }).done(function(response){
+                }).done(function (response) {
+                    refreshSchedules();
+                    $('#schedule-search-modal').modal('hide');
+                }).fail(function (xhr) {
+                    if (!xhr || !xhr.responseText)
+                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Ups! Se ha producido un error...').show();
+                    else
+                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ' + xhr.responseText).show();
+                }).always(function () {
+                    $btn.prop('disabled', false).html(innerHTML);
+                });
+            });
 
-                }).fail(function(){
-                    $('#schedule-add-error').html("Ups! Se ha producido un error...").show();
-                })
-            })
+            $('#schedules').on('click', function () {
+                refreshSchedules();
+                $('#schedules-modal').modal('show');
+            });
+
+            $('#schedules-refresh-btn').on('click', function () {
+                refreshSchedules(true);
+            });
+
+
+            const schedulesParentTemplate = document.getElementById('schedule-template-container');
+            const scheduleTemplate = schedulesParentTemplate.innerHTML;
+            schedulesParentTemplate.remove()
+
+            let req;
+            let to;
+            const schedulesRefreshTime = 10000;
+            function refreshSchedules(force) {
+                if (to) {
+                    clearTimeout(to);
+                }
+                if (!force && $('#schedules-modal').hasClass('show')) {
+                    to = setTimeout(refreshSchedules, schedulesRefreshTime)
+                    return;
+                }
+                if (req) {
+                    req.abort();
+                }
+                const url = '/schedules';
+                $('#schedules-refresh-btn i').addClass('fa-spinner');
+                req = $.getJSON(url).done(function (response) {
+                    $('#schedules-results').empty();
+                    $('#schedules-refresh-btn i').removeClass('fa-spinner');
+
+                    if (!response || !response.length) {
+                        $('#schedules-count').hide();
+                        $('#schedules-none').show();
+                        return;
+                    }
+                    $('#schedules-none').hide();
+                    $('#schedules-count').text(response.length).show();
+                    const $tbody = $('#schedules-table tbody').empty();
+                    for (var k in response) {
+                        const s = response[k];
+
+                        const $cont = $(scheduleTemplate);
+                        if (s.params.categoriaTexto)
+                            $cont.find('.schedule-categoria').text(s.params.categoriaTexto);
+                        else
+                            $cont.find('.schedule-categoria').hide();
+                        if (s.params.subcategoriaTexto)
+                            $cont.find('.schedule-subcategoria').text(s.params.subcategoriaTexto);
+                        else
+                            $cont.find('.schedule-subcategoria').hide();
+                        if (s.params.calidadTexto)
+                            $cont.find('.schedule-calidad').text(s.params.calidadTexto);
+                        else
+                            $cont.find('.schedule-calidad').hide();
+                        if (s.params.q)
+                            $cont.find('.schedule-palabras').text(s.params.q);
+                        else
+                            $cont.find('.schedule-palabras').hide();
+
+                        $cont.find('.schedule-folder').prop('title', 'Carpeta de descarga: ' + s.folder).tooltip();
+                        $cont.find('.schedule-interval').text(s.interval);
+                        $cont.find('.schedule-last-execution').text(moment(s.lastExecutionTime).fromNow());
+                        
+                        $cont.find('.schedule-img').prop('src', '/image?path=' + (s.lastTorrentImage == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : s.lastTorrentImage))
+                        if (s.lastTorrentName) {
+                            $cont.find('.schedule-img').addClass('has-tooltip').prop('title', 'Último torrent encontrado: ' + s.lastTorrentName);
+                        }
+
+                        if (s.disabled) {
+                            $cont.addClass('schedule-disabled');
+                            $cont.find('.schedule-disable').hide();
+                        } else {
+                            $cont.find('.schedule-enable').hide();
+                        }
+
+                        $('#schedules-results').append($cont);
+                        $cont.find('.has-tooltip').tooltip();
+
+                        $cont.data('schedule-id', s.id);
+                        $cont.find('.schedule-enable').on('click', function(){
+                            const $cont = $(this).closest('.schedule');
+                            const id = $cont.data('schedule-id');
+                            const $btn = $(this);
+                            const innerHTML = $btn.html();
+                            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                            const url = '/schedule/enable?id=' + id;
+                            $.post(url)
+                            .done(function(){
+                                $cont.removeClass('schedule-disabled');
+                                $btn.hide().tooltip('dispose');
+                                $cont.find('.schedule-disable').show().tooltip();
+                            }).fail(function(){
+
+                            }).always(function(){
+                                $btn.prop('disabled', false).html(innerHTML);
+                            })
+
+                        });
+                        $cont.find('.schedule-disable').on('click', function(){
+                            const $cont = $(this).closest('.schedule');
+                            const id = $cont.data('schedule-id');
+                            const $btn = $(this);
+                            $btn.prop('disabled', true);
+                            const innerHTML = $btn.html();
+                            $btn.html('<span class="spinner-border spinner-border-sm"></span>');
+                            const url = '/schedule/disable?id=' + id;
+                            $.post(url)
+                            .done(function(){
+                                $cont.addClass('schedule-disabled');
+                                $btn.hide().tooltip('dispose');
+                                $cont.find('.schedule-enable').show().tooltip();
+                            }).fail(function(){
+
+                            }).always(function(){
+                                $btn.prop('disabled', false).html(innerHTML);
+                            })
+                        });
+                        $cont.find('.schedule-delete').on('click', function(){
+                            const $cont = $(this).closest('.schedule');
+                            const id = $cont.data('schedule-id');
+                            const $btn = $(this);
+                            $btn.prop('disabled', true);
+                            const innerHTML = $btn.html();
+                            $btn.html('<span class="spinner-border spinner-border-sm"></span>');
+                            const url = '/schedule?id=' + id;
+                            $.delete(url)
+                            .done(function(){
+                                $btn.tooltip('dispose');
+                                refreshSchedules(true);
+                            }).fail(function(){
+
+                            }).always(function(){
+                                $btn.prop('disabled', false).html(innerHTML);
+                            })
+                        });
+                    }
+                    $('#schedules-results').show();
+                    to = setTimeout(refreshSchedules, schedulesRefreshTime)
+                });
+            }
+            refreshSchedules();
+
+            function isPositiveInteger(str) {
+                var n = Math.floor(Number(str));
+                return n !== Infinity && String(n) === str && n >= 0;
+            }
         });
-
-        function isPositiveInteger(str) {
-            var n = Math.floor(Number(str));
-            return n !== Infinity && String(n) === str && n >= 0;
-        }
 
     </script>
 </body>

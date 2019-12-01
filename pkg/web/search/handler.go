@@ -3,7 +3,6 @@ package search
 import (
 	"encoding/json"
 	"net/http"
-	"net/url"
 
 	"github.com/nilbelec/potatorrent/pkg/crawler"
 	"github.com/nilbelec/potatorrent/pkg/web/router"
@@ -29,17 +28,13 @@ func (h *Handler) Routes() router.Routes {
 }
 
 func (h *Handler) searchTorrents(w http.ResponseWriter, r *http.Request) {
-	params := url.Values{
-		"categoryIDR": {r.URL.Query().Get("categoria")},
-		"categoryID":  {r.URL.Query().Get("subcategoria")},
-		"idioma":      {r.URL.Query().Get("idioma")},
-		"calidad":     {r.URL.Query().Get("calidad")},
-		"ordenar":     {r.URL.Query().Get("ordenar")},
-		"inon":        {r.URL.Query().Get("inon")},
-		"s":           {r.URL.Query().Get("q")},
-		"pg":          {r.URL.Query().Get("pg")},
+	params := &crawler.SearchParams{
+		Categoria:    r.URL.Query().Get("categoria"),
+		SubCategoria: r.URL.Query().Get("subcategoria"),
+		Calidad:      r.URL.Query().Get("calidad"),
+		Palabras:     r.URL.Query().Get("q"),
 	}
-	sr, err := h.c.Search(params)
+	sr, err := h.c.Search(params, r.URL.Query().Get("pg"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
