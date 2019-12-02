@@ -634,6 +634,9 @@
                 method: 'DELETE'
             });
         }
+
+        $.fn.tooltip.Constructor.Default.boundary = 'viewport';
+        $.fn.tooltip.Constructor.Default.delay = { "show": 500, "hide": 100 };
     </script>
 
     <script>

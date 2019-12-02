@@ -10,30 +10,31 @@ import (
 
 type SchedulesFile struct {
 	sync.Mutex
-	filename string
+	filename  string
+	schedules schedulesMap
 }
 
 type schedulesMap map[string]*ScheduleSearch
 
 // NewSchedulesFile creates a new SchedulesFile to store the schedules
 func NewSchedulesFile(filename string) *SchedulesFile {
-	f := &SchedulesFile{filename: filename}
-	e, _ := f.exists()
-	if !e {
-		f.saveJSON(make(schedulesMap))
+	f := &SchedulesFile{filename: filename, schedules: make(schedulesMap)}
+	e, err := f.exists()
+	if err != nil {
+		panic(err)
 	}
+	if !e {
+		f.persist()
+	}
+	f.load()
 	return f
 }
 
 func (f *SchedulesFile) GetAll() []*ScheduleSearch {
 	f.Lock()
 	defer f.Unlock()
-	schedules, err := f.readJSON()
-	if err != nil {
-		return nil
-	}
 	r := make([]*ScheduleSearch, 0)
-	for _, v := range schedules {
+	for _, v := range f.schedules {
 		r = append(r, v)
 	}
 	sort.SliceStable(r, func(i, j int) bool {
@@ -45,24 +46,15 @@ func (f *SchedulesFile) GetAll() []*ScheduleSearch {
 func (f *SchedulesFile) Delete(id string) error {
 	f.Lock()
 	defer f.Unlock()
-	schedules, err := f.readJSON()
-	if err != nil {
-		return err
-	}
-	delete(schedules, id)
-	f.saveJSON(schedules)
-	return nil
+	delete(f.schedules, id)
+	return f.persist()
 }
 
 func (f *SchedulesFile) GetAllIDs() ([]string, error) {
 	f.Lock()
 	defer f.Unlock()
 	r := make([]string, 0)
-	schedules, err := f.readJSON()
-	if err != nil {
-		return nil, err
-	}
-	for k := range schedules {
+	for k := range f.schedules {
 		r = append(r, k)
 	}
 	return r, nil
@@ -71,22 +63,14 @@ func (f *SchedulesFile) GetAllIDs() ([]string, error) {
 func (f *SchedulesFile) Save(ss *ScheduleSearch) error {
 	f.Lock()
 	defer f.Unlock()
-	schedules, err := f.readJSON()
-	if err != nil {
-		return err
-	}
-	schedules[ss.ID] = ss
-	return f.saveJSON(schedules)
+	f.schedules[ss.ID] = ss
+	return f.persist()
 }
 
-func (f *SchedulesFile) Get(id string) (*ScheduleSearch, error) {
+func (f *SchedulesFile) Get(id string) *ScheduleSearch {
 	f.Lock()
 	defer f.Unlock()
-	var schedules, err = f.readJSON()
-	if err != nil {
-		return nil, err
-	}
-	return schedules[id], nil
+	return f.schedules[id]
 }
 
 func (f *SchedulesFile) exists() (bool, error) {
@@ -97,23 +81,18 @@ func (f *SchedulesFile) exists() (bool, error) {
 	return err == nil, err
 }
 
-func (f *SchedulesFile) saveJSON(v schedulesMap) error {
-	b, err := json.MarshalIndent(&v, "", " ")
+func (f *SchedulesFile) persist() error {
+	b, err := json.MarshalIndent(&f.schedules, "", " ")
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(f.filename, b, 0644)
 }
 
-func (f *SchedulesFile) readJSON() (schedulesMap, error) {
+func (f *SchedulesFile) load() error {
 	b, err := ioutil.ReadFile(f.filename)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	var schedules = schedulesMap{}
-	err = json.Unmarshal(b, &schedules)
-	if err != nil {
-		return nil, err
-	}
-	return schedules, nil
+	return json.Unmarshal(b, &f.schedules)
 }

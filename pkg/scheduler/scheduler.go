@@ -61,10 +61,7 @@ func (s *Scheduler) Delete(id string) error {
 }
 
 func (s *Scheduler) Disable(id string) error {
-	ss, err := s.f.Get(id)
-	if err != nil {
-		return err
-	}
+	ss := s.f.Get(id)
 	if ss == nil {
 		return errors.New("No se ha encontrado la búsqueda programada")
 	}
@@ -73,10 +70,7 @@ func (s *Scheduler) Disable(id string) error {
 }
 
 func (s *Scheduler) Enable(id string) error {
-	ss, err := s.f.Get(id)
-	if err != nil {
-		return err
-	}
+	ss := s.f.Get(id)
 	if ss == nil {
 		return errors.New("No se ha encontrado la búsqueda programada")
 	}
@@ -105,7 +99,7 @@ func (s *Scheduler) save(ss *ScheduleSearch) error {
 
 func (s *Scheduler) run(id string) {
 	for {
-		ss, err := s.f.Get(id)
+		ss := s.f.Get(id)
 		if ss == nil {
 			break
 		}
