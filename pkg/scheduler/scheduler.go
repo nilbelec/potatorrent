@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	random "math/rand"
 	"os"
 	"strings"
 	"time"
@@ -175,6 +176,7 @@ func (s *Scheduler) runAll() error {
 	}
 	for _, id := range ids {
 		go s.run(id)
+		time.Sleep(time.Duration(random.Intn(5)+5) * time.Second)
 	}
 	return nil
 }
