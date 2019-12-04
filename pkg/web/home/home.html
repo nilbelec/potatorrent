@@ -390,7 +390,7 @@
             <span id="version" class="badge badge-danger"></span>
         </a>
         <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/" class="badge badge-success my-1"
-            data-toggle="tooltip" data-placement="left">
+            data-toggle="tooltip" data-placement="left" style="display: none;">
             <i class="fa fa-bell"></i>
         </a>
     </div>
@@ -707,8 +707,8 @@
                         return;
                     $('#version').html(response.current);
                     if (response.current !== response.latest) {
-                        $('#new-version').prop('title', 'Hay una nueva versión disponible: ' + response.latest)
-                        $('#new-version').tooltip()
+                        $('#new-version').prop('title', 'Hay una nueva versión disponible: ' + response.latest);
+                        $('#new-version').show().tooltip()
                     }
                 });
 
