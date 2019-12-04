@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	random "math/rand"
 	"os"
 	"strings"
@@ -15,16 +16,18 @@ import (
 )
 
 type ScheduleSearch struct {
-	ID               string                `json:"id"`
-	LastTorrentID    string                `json:"lastTorrentID"`
-	LastTorrentName  string                `json:"lastTorrentName"`
-	LastTorrentImage string                `json:"lastTorrentImage"`
-	LastExecution    time.Time             `json:"lastExecutionTime"`
-	Folder           string                `json:"folder"`
-	Interval         int                   `json:"interval"`
-	Params           *crawler.SearchParams `json:"params"`
-	Error            string                `json:"error"`
-	Disabled         bool                  `json:"disabled"`
+	ID                  string                `json:"id"`
+	LastTorrentID       string                `json:"lastTorrentID"`
+	LastTorrentName     string                `json:"lastTorrentName"`
+	LastTorrentImage    string                `json:"lastTorrentImage"`
+	LastTorrentDate     string                `json:"lastTorrentDate"`
+	LastTorrentPassword string                `json:"lastTorrentPassword"`
+	LastExecution       time.Time             `json:"lastExecutionTime"`
+	Folder              string                `json:"folder"`
+	Interval            int                   `json:"interval"`
+	Params              *crawler.SearchParams `json:"params"`
+	Error               string                `json:"error"`
+	Disabled            bool                  `json:"disabled"`
 }
 
 // Scheduler is an Torrent scheduler
@@ -133,6 +136,7 @@ func (s *Scheduler) run(id string) {
 			ss.LastTorrentID = ts[0].TorrentID
 			ss.LastTorrentName = ts[0].TorrentName
 			ss.LastTorrentImage = ts[0].Imagen
+			ss.LastTorrentDate = ts[0].TorrentDateAdded
 		}
 		ss.LastExecution = time.Now()
 		s.f.Save(ss)
@@ -149,6 +153,7 @@ func (s *Scheduler) downloadTorrent(t crawler.Torrent, ss *ScheduleSearch) error
 	if result == nil || result.Url == "" {
 		return errors.New("No se ha encontrado la URL del torrent")
 	}
+	ss.LastTorrentPassword = result.Password
 	client := util.NewHTTPClient()
 	resp, err := client.Get(result.Url)
 	if err != nil {
@@ -165,6 +170,9 @@ func (s *Scheduler) downloadTorrent(t crawler.Torrent, ss *ScheduleSearch) error
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		return err
+	}
+	if result.Password != "" {
+		return ioutil.WriteFile(ss.Folder+"/"+t.TorrentID+".password.txt", []byte(result.Password), 0644)
 	}
 	return nil
 }

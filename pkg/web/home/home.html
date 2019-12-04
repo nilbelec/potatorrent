@@ -287,6 +287,15 @@
             border-bottom-right-radius: 0 !important;
         }
 
+        .dropdown-menu {
+            border-radius: 0 !important;
+            padding: 0;
+        }
+
+        .dropdown-divider {
+            margin: 0;
+        }
+
         #title {
             font-family: 'Anton', sans-serif;
             font-size: 1.5rem;
@@ -352,11 +361,20 @@
         .schedule-disabled {
             opacity: 0.5;
         }
-
     </style>
 </head>
 
 <body>
+    <div aria-live="polite" aria-atomic="true" style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 999999;">
+        <div id="notification" class="toast" data-delay="3000" style="position: absolute; top: 0; right: 0; width:400px; border-radius:0;">            
+            <div class="toast-body alert text-center" style="margin-bottom: 0;">
+                <strong id="notification-text">
+                    Enlace copiado al portapapeles
+                </strong>
+            </div>
+        </div>
+    </div>
+
     <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
         <button id="schedules" class="btn float-left p-0 text-light" data-toggle="tooltip" data-placement="right"
             title="Búsquedas programadas">
@@ -434,11 +452,27 @@
                     <div class="col mt-auto text-right text-md-center">
                         <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning"></span>
                     </div>
-                    <div class="col-12 col-md mt-3 mt-md-auto">
-                        <button type="button" class="torrent-download btn btn-danger btn-sm float-right">
-                            Descargar Torrent
-                            <i class="fa fa-download" aria-hidden="true"></i>
-                        </button>
+                    <div class="col-12 col-md mt-3 mt-md-auto text-right">
+                        <div class="btn-group download-group">
+                            <button type="button" class="torrent-download btn btn-danger btn-sm">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                                Descargar Torrent
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <button class="dropdown-item torrent-download-copy" type="button">
+                                    Copiar enlace al portapapeles
+                                    <i class="fa fa-copy fa-fw" aria-hidden="true"></i>
+                                </button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item torrent-download-password" type="button">
+                                    Buscar contraseña para descomprimir
+                                    <i class="fa fa-key fa-fw" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -523,7 +557,7 @@
                             <input type="text" required class="form-control" id="schedule-add-folder"
                                 placeholder="/Users/potatorrent/Downloads">
                             <small class="form-text text-muted">¿En qué carpeta quieres que se descarguen los ficheros
-                                torrents?</small>
+                                torrents y sus contraseñas (si tuvieran)?</small>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -556,7 +590,8 @@
                         <span class="schedule-categoria badge badge-info has-tooltip" title="Categoría"></span>
                         <span class="schedule-subcategoria badge badge-info has-tooltip" title="Subategoría"></span>
                         <span class="schedule-calidad badge badge-info has-tooltip" title="Calidad"></span>
-                        <span class="schedule-palabras badge badge-info has-tooltip" title="Términos de búsqueda"></span>
+                        <span class="schedule-palabras badge badge-info has-tooltip"
+                            title="Términos de búsqueda"></span>
                     </div>
                     <div class="col-auto">
                         <strong>Lanzada</strong>
@@ -569,13 +604,16 @@
                         <i class="schedule-folder text-warning fa fa-2x fa-folder"></i>
                     </div>
                     <div class="col-auto">
-                        <button class="schedule-enable btn btn-outline-primary has-tooltip" title="Volver a habilitar esta búsqueda">
+                        <button class="schedule-enable btn btn-outline-primary has-tooltip"
+                            title="Volver a habilitar esta búsqueda">
                             <i class="fa fa-play fa-fw"></i>
                         </button>
-                        <button class="schedule-disable btn btn-outline-secondary has-tooltip" title="Deshabilitar esta búsqueda">
+                        <button class="schedule-disable btn btn-outline-secondary has-tooltip"
+                            title="Deshabilitar esta búsqueda">
                             <i class="fa fa-stop fa-fw"></i>
                         </button>
-                        <button class="schedule-delete btn btn-outline-danger has-tooltip" title="Eliminar esta búsqueda">
+                        <button class="schedule-delete btn btn-outline-danger has-tooltip"
+                            title="Eliminar esta búsqueda">
                             <i class="fa fa-trash fa-fw"></i>
                         </button>
                     </div>
@@ -633,6 +671,24 @@
                 url: url,
                 method: 'DELETE'
             });
+        }
+        $.success = function (text) {
+            $('#notification-text').closest('.alert').removeClass('alert-danger alert-warning').addClass('alert-success');
+            $('#notification-text').text(text);
+            $('#notification').toast('dispose')
+            $('#notification').toast('show');
+        }
+        $.error = function (text) {
+            $('#notification-text').closest('.alert').removeClass('alert-success alert-warning').addClass('alert-danger');
+            $('#notification-text').text(text);
+            $('#notification').toast('dispose')
+            $('#notification').toast('show');
+        }
+        $.warning = function (text) {
+            $('#notification-text').closest('.alert').removeClass('alert-danger alert-success').addClass('alert-warning');
+            $('#notification-text').text(text);
+            $('#notification').toast('dispose')
+            $('#notification').toast('show');
         }
 
         $.fn.tooltip.Constructor.Default.boundary = 'viewport';
@@ -802,35 +858,68 @@
                         $cont.find('.torrent-calidad').text(t.calidad)
                         $cont.find('.torrent-fecha').text(t.torrentDateAdded)
                         $cont.find('.torrent-tamano').text(t.torrentSize)
-                        $cont.find('.torrent-download').data('id', t.torrentID).data('guid', t.guid)
+                        $cont.find('.download-group').data('id', t.torrentID).data('guid', t.guid)
 
                         $('#search-results-container').append($cont)
 
-                        $cont.find('.torrent-download').on('click', function () {
+                        $cont.find('.torrent-download, .torrent-download-copy, .torrent-download-password').on('click', function (e) {
+                            e.stopPropagation()
                             const $btn = $(this);
+                            const $group = $btn.closest('.download-group');
+                            if ($group.data('download-data')) {
+                                processDownloadData($btn);
+                                return;
+                            }
                             $btn.prop('disabled', true);
                             const innerHTML = $btn.html();
                             $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Buscando...');
 
-                            const id = $btn.data('id');
-                            const guid = $btn.data('guid');
+                            const id = $group.data('id');
+                            const guid = $group.data('guid');
 
                             $.getJSON('/download', { id: id, guid: guid })
                                 .done(function (response) {
-                                    if (!response || !response.url) {
-                                        $('#not-found-modal').modal('show');
-                                        return;
-                                    }
-                                    window.open(response.url);
-                                    if (response.password) {
-                                        $('#password-modal #password').text(response.password);
-                                        $('#password-modal').modal('show');
-                                    }
+                                    $group.data('download-data', response);
+                                    processDownloadData($btn);
                                 }).always(function () {
                                     $btn.prop('disabled', false);
                                     $btn.html(innerHTML);
                                 })
                         })
+
+                        function processDownloadData($btn) {
+                            const $group = $btn.closest('.download-group');
+                            const data = $group.data('download-data')
+                            if (!data || !data.url) {
+                                $('#not-found-modal').modal('show');
+                                return;
+                            }
+                            if ($btn.hasClass('torrent-download')) {
+                                window.open(data.url);
+                            } else if ($btn.hasClass('torrent-download-copy')) {
+                                copyToClipboard(data.url)
+                                $.success('Enlace copiado al portapapeles :)');
+                            } else if ($btn.hasClass('torrent-download-password')) {
+                                if (!data.password) {
+                                    $.success('Este torrent no parece necesitar ninguna contraseña');
+                                    return;
+                                }
+                                $('#password-modal #password').text(data.password);
+                                $('#password-modal').modal('show');
+                            }
+                        }
+
+                        const copyToClipboard = str => {
+                            const el = document.createElement('textarea');
+                            el.value = str;
+                            el.setAttribute('readonly', '');
+                            el.style.position = 'absolute';
+                            el.style.left = '-9999px';
+                            document.body.appendChild(el);
+                            el.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(el);
+                        };
                     }
                 })
             }
@@ -964,10 +1053,10 @@
                         $cont.find('.schedule-folder').prop('title', 'Carpeta de descarga: ' + s.folder).tooltip();
                         $cont.find('.schedule-interval').text(s.interval);
                         $cont.find('.schedule-last-execution').text(moment(s.lastExecutionTime).fromNow());
-                        
+
                         $cont.find('.schedule-img').prop('src', '/image?path=' + (s.lastTorrentImage == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : s.lastTorrentImage))
                         if (s.lastTorrentName) {
-                            $cont.find('.schedule-img').addClass('has-tooltip').prop('title', 'Último torrent encontrado: ' + s.lastTorrentName);
+                            $cont.find('.schedule-img').addClass('has-tooltip').prop('title', 'Último torrent encontrado: ' + s.lastTorrentName + ' - Publicado el ' + s.lastTorrentDate);
                         }
 
                         if (s.disabled) {
@@ -981,7 +1070,7 @@
                         $cont.find('.has-tooltip').tooltip();
 
                         $cont.data('schedule-id', s.id);
-                        $cont.find('.schedule-enable').on('click', function(){
+                        $cont.find('.schedule-enable').on('click', function () {
                             const $cont = $(this).closest('.schedule');
                             const id = $cont.data('schedule-id');
                             const $btn = $(this);
@@ -989,18 +1078,18 @@
                             $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
                             const url = '/schedule/enable?id=' + id;
                             $.post(url)
-                            .done(function(){
-                                $cont.removeClass('schedule-disabled');
-                                $btn.hide().tooltip('dispose');
-                                $cont.find('.schedule-disable').show().tooltip();
-                            }).fail(function(){
+                                .done(function () {
+                                    $cont.removeClass('schedule-disabled');
+                                    $btn.hide().tooltip('dispose');
+                                    $cont.find('.schedule-disable').show().tooltip();
+                                }).fail(function () {
 
-                            }).always(function(){
-                                $btn.prop('disabled', false).html(innerHTML);
-                            })
+                                }).always(function () {
+                                    $btn.prop('disabled', false).html(innerHTML);
+                                })
 
                         });
-                        $cont.find('.schedule-disable').on('click', function(){
+                        $cont.find('.schedule-disable').on('click', function () {
                             const $cont = $(this).closest('.schedule');
                             const id = $cont.data('schedule-id');
                             const $btn = $(this);
@@ -1009,17 +1098,17 @@
                             $btn.html('<span class="spinner-border spinner-border-sm"></span>');
                             const url = '/schedule/disable?id=' + id;
                             $.post(url)
-                            .done(function(){
-                                $cont.addClass('schedule-disabled');
-                                $btn.hide().tooltip('dispose');
-                                $cont.find('.schedule-enable').show().tooltip();
-                            }).fail(function(){
+                                .done(function () {
+                                    $cont.addClass('schedule-disabled');
+                                    $btn.hide().tooltip('dispose');
+                                    $cont.find('.schedule-enable').show().tooltip();
+                                }).fail(function () {
 
-                            }).always(function(){
-                                $btn.prop('disabled', false).html(innerHTML);
-                            })
+                                }).always(function () {
+                                    $btn.prop('disabled', false).html(innerHTML);
+                                })
                         });
-                        $cont.find('.schedule-delete').on('click', function(){
+                        $cont.find('.schedule-delete').on('click', function () {
                             const $cont = $(this).closest('.schedule');
                             const id = $cont.data('schedule-id');
                             const $btn = $(this);
@@ -1028,14 +1117,14 @@
                             $btn.html('<span class="spinner-border spinner-border-sm"></span>');
                             const url = '/schedule?id=' + id;
                             $.delete(url)
-                            .done(function(){
-                                $btn.tooltip('dispose');
-                                refreshSchedules(true);
-                            }).fail(function(){
+                                .done(function () {
+                                    $btn.tooltip('dispose');
+                                    refreshSchedules(true);
+                                }).fail(function () {
 
-                            }).always(function(){
-                                $btn.prop('disabled', false).html(innerHTML);
-                            })
+                                }).always(function () {
+                                    $btn.prop('disabled', false).html(innerHTML);
+                                })
                         });
                     }
                     $('#schedules-results').show();
