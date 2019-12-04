@@ -301,6 +301,13 @@
             font-size: 1.5rem;
             text-decoration: none;
             color: inherit;
+            position: relative;
+        }
+
+        #version {
+            font-size: .8rem;
+            position: absolute;
+            bottom: -3px;
         }
 
         #title:hover {
@@ -308,15 +315,11 @@
             color: inherit;
         }
 
-        #update {
+        #new-version {
             padding: 0.5rem;
             color: #fff;
             position: absolute;
             right: 10px;
-        }
-
-        #update .fa-spinner {
-            color: #fff;
         }
 
         #top-bar {
@@ -365,8 +368,8 @@
 </head>
 
 <body>
-    <div aria-live="polite" aria-atomic="true" style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 999999;">
-        <div id="notification" class="toast" data-delay="3000" style="position: absolute; top: 0; right: 0; width:400px; border-radius:0;">            
+    <div aria-live="polite" aria-atomic="true" style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 1040;">
+        <div id="notification" class="toast fade hide" data-delay="3000" style="border-radius:0;">            
             <div class="toast-body alert text-center" style="margin-bottom: 0;">
                 <strong id="notification-text">
                     Enlace copiado al portapapeles
@@ -382,13 +385,13 @@
             <span id="schedules-count" class="badge badge-primary" style="display: none;"></span>
         </button>
         <a id="title" href="#">
+            <img height="36px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
             potatorrent
-            <img height="36px"
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Twemoji2_1f954.svg/1024px-Twemoji2_1f954.svg.png" />
+            <span id="version" class="badge badge-danger"></span>
         </a>
-        <a id="update" target="_blank" href="https://github.com/nilbelec/potatorrent/" class="badge badge-dark my-1"
-            data-toggle="tooltip" data-placement="left" title="Tienes la última versión">
-            <i class="fa fa-spinner fa-pulse"></i>
+        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/" class="badge badge-success my-1"
+            data-toggle="tooltip" data-placement="left">
+            <i class="fa fa-bell"></i>
         </a>
     </div>
     <main class="py-4">
@@ -702,12 +705,11 @@
                 .done(function (response) {
                     if (!response)
                         return;
-                    $('#update').html(response.current);
+                    $('#version').html(response.current);
                     if (response.current !== response.latest) {
-                        $('#update').prop('title', 'Hay una nueva versión disponible: ' + response.latest)
-                        $('#update').toggleClass('badge-dark badge-success')
+                        $('#new-version').prop('title', 'Hay una nueva versión disponible: ' + response.latest)
+                        $('#new-version').tooltip()
                     }
-                    $('#update').tooltip()
                 });
 
             $('#schedules').tooltip();
