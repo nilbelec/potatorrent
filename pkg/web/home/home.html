@@ -438,7 +438,7 @@
     <div id="result-template-container" hidden>
         <div class="torrent row py-3 border-bottom">
             <div class="col-auto my-auto">
-                <img class="torrent-img rounded" style="width: 90px;" />
+                <img class="torrent-img lazyload rounded" width="90" height="128"/>
             </div>
             <div class="col">
                 <div class="row h-100">
@@ -604,7 +604,7 @@
                         minutos
                     </div>
                     <div class="col-auto">
-                        <i class="schedule-folder text-warning fa fa-2x fa-folder"></i>
+                        <i class="schedule-folder text-warning fa fa-2x fa-fw fa-folder"></i>
                     </div>
                     <div class="col-auto">
                         <button class="schedule-enable btn btn-outline-primary has-tooltip"
@@ -653,6 +653,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -855,7 +856,7 @@
                         const t = response.data.torrents["0"][k];
 
                         const $cont = $(torrentTemplate);
-                        $cont.find('.torrent-img').prop('src', '/image?path=' + (t.imagen == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : t.imagen))
+                        $cont.find('.torrent-img').attr('data-src', '/image?path=' + (t.imagen == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : t.imagen))
                         $cont.find('.torrent-title').text(t.torrentName)
                         $cont.find('.torrent-calidad').text(t.calidad)
                         $cont.find('.torrent-fecha').text(t.torrentDateAdded)
@@ -923,6 +924,7 @@
                             document.body.removeChild(el);
                         };
                     }
+                    lazyload();
                 })
             }
 

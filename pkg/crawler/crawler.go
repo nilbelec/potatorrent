@@ -36,18 +36,18 @@ type Torrent struct {
 }
 
 type SearchData struct {
-	All      int                           `json:"all"`
-	Items    int                           `json:"items"`
-	Torrents map[string]map[string]Torrent `json:"torrents"`
-	Total    int                           `json:"total"`
+	All      int                            `json:"all"`
+	Items    int                            `json:"items"`
+	Torrents map[string]map[string]*Torrent `json:"torrents"`
+	Total    int                            `json:"total"`
 }
 
-func (s *SearchData) GetTorrents() []Torrent {
+func (s *SearchData) GetTorrents() []*Torrent {
 	return sortTorrents(s.Torrents)
 }
 
-func sortTorrents(m map[string]map[string]Torrent) []Torrent {
-	result := make([]Torrent, 0)
+func sortTorrents(m map[string]map[string]*Torrent) []*Torrent {
+	result := make([]*Torrent, 0)
 
 	keys := make([]string, 0, len(m))
 	for k := range m {

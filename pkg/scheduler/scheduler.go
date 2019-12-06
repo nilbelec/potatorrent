@@ -145,7 +145,7 @@ func (s *Scheduler) run(id string) {
 	}
 }
 
-func (s *Scheduler) downloadTorrent(t crawler.Torrent, ss *ScheduleSearch) error {
+func (s *Scheduler) downloadTorrent(t *crawler.Torrent, ss *ScheduleSearch) error {
 	result, err := s.c.Download(t.TorrentID, t.GUID)
 	if err != nil {
 		return err
