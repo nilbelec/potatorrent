@@ -240,7 +240,8 @@
             border-radius: 0;
         }
 
-        .btn-primary {
+        .btn-potato {
+            color: #fff;
             background-color: #d99e82;
             border: none;
         }
@@ -253,12 +254,18 @@
             color: #c8775e;
         }
 
-        .btn-primary:hover,
-        .btn-primary:active {
+        .btn-potato:hover,
+        .btn-potato:active {
+            color: #fff;
             background-color: #c8775e !important;
         }
 
-        .btn-primary:focus {
+        .btn-potato.disabled, .btn-potato:disabled {
+            background-color: #d99e82;
+         }
+
+
+        .btn-potato:focus {
             box-shadow: none;
         }
 
@@ -326,22 +333,30 @@
             box-shadow: 0px 2px 5px #000;
         }
 
-        .torrent-title {
+        .torrent .torrent-title {
             text-shadow: 0px 2px 2px #ccc;
         }
 
-        .torrent-fecha {
+        .torrent .torrent-fecha {
             font-size: .8rem;
         }
 
+        .torrent .torrent-img {
+            transition: transform .2s ease-in-out;
+        }
+
+        .torrent .torrent-img:hover {
+            transform: scale(1.5);
+        }
+
         #schedules {
-            position: relative;
+            position: absolute;
             transition: all .2s ease-in-out;
+            left: 10px;
         }
 
         #schedules:hover {
             transform: scale(1.1);
-            color: #d99e82 !important;
         }
 
         #schedules .badge {
@@ -381,7 +396,7 @@
     <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
         <button id="schedules" class="btn float-left p-0 text-light" data-toggle="tooltip" data-placement="right"
             title="Búsquedas programadas">
-            <i class="fa fa-2x fa-clock-o" aria-hidden="true"></i>
+            <i class="fa fa-2x fa-fw fa-clock-o" aria-hidden="true"></i>
             <span id="schedules-count" class="badge badge-primary" style="display: none;"></span>
         </button>
         <a id="title" href="#">
@@ -389,9 +404,9 @@
             potatorrent
             <span id="version" class="badge badge-danger"></span>
         </a>
-        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/" class="badge badge-success my-1"
+        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/releases" class="badge badge-success my-1"
             data-toggle="tooltip" data-placement="left" style="display: none;">
-            <i class="fa fa-bell"></i>
+            <i class="fa fa-bell fa-fw"></i>
         </a>
     </div>
     <main class="py-4">
@@ -419,7 +434,7 @@
                         aria-label="Search" disabled>
                 </div>
             </div>
-            <button type="button" id="search" class="btn btn-primary btn-block">Buscar</button>
+            <button type="button" id="search" class="btn btn-potato btn-block">Buscar</button>
         </div>
         <div class="container pt-3 pb-5" id="search-container">
             <div id="results-top-bar" style="display: none;">
@@ -575,7 +590,7 @@
                     <div id="schedule-add-error" class="alert alert-danger" style="display: none;"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="schedule-search-save" class="btn btn-primary">Guardar</button>
+                    <button type="button" id="schedule-search-save" class="btn btn-potato">Guardar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
@@ -643,8 +658,8 @@
                     <div id="schedules-results"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="schedules-refresh-btn" class="btn btn-primary">
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                    <button type="button" id="schedules-refresh-btn" class="btn btn-potato">
+                        <i class="fa fa-refresh fa-fw" aria-hidden="true"></i>
                         Actualizar
                     </button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -808,6 +823,7 @@
             });
 
             function doSearch() {
+                $('#search').prop('disabled', true);
                 $('#search-results-container').html(loading);
                 var params = $('#search-container').data('params');
                 $.getJSON("/search", params).done(function (response) {
@@ -899,6 +915,10 @@
                             }
                             if ($btn.hasClass('torrent-download')) {
                                 window.open(data.url);
+                                if (data.password) {
+                                    $('#password').text(data.password);
+                                    $('#password-modal').modal('show');
+                                }
                             } else if ($btn.hasClass('torrent-download-copy')) {
                                 copyToClipboard(data.url)
                                 $.success('Enlace copiado al portapapeles :)');
@@ -907,7 +927,7 @@
                                     $.success('Este torrent no parece necesitar ninguna contraseña');
                                     return;
                                 }
-                                $('#password-modal #password').text(data.password);
+                                $('#password').text(data.password);
                                 $('#password-modal').modal('show');
                             }
                         }
@@ -925,6 +945,8 @@
                         };
                     }
                     lazyload();
+                }).always(function (){
+                    $('#search').prop('disabled', false);
                 })
             }
 
