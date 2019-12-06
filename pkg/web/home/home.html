@@ -351,12 +351,15 @@
 
         #schedules {
             position: absolute;
-            transition: all .2s ease-in-out;
             left: 10px;
         }
 
+        #schedules {
+            transition: all .2s ease-in-out;
+        }
+
         #schedules:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
         }
 
         #schedules .badge {
@@ -440,7 +443,7 @@
             <div id="results-top-bar" style="display: none;">
                 <small id="search-results-info" class="text-muted"></small>
                 <button type="button" id="schedule-search" class="btn btn-secondary btn-sm float-right">
-                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                    <i class="fa fa-floppy-o fa-fw" aria-hidden="true"></i>
                     Programar esta búsqueda
                 </button>
                 <div class="clearfix"></div>
@@ -461,19 +464,19 @@
                         <span class="torrent-title"></span>
                     </div>
                     <div class="col-auto">
-                        <span title="Fecha de publicación" class="torrent-fecha badge badge-dark"></span>
+                        <span title="Fecha de publicación" class="torrent-fecha badge badge-dark has-tooltip"></span>
                     </div>
                     <div class="w-100"></div>
                     <div class="col mt-auto">
-                        <span title="Calidad o tipo de elemento" class="torrent-calidad badge badge-info"></span>
+                        <span title="Calidad o tipo de elemento" class="torrent-calidad badge badge-info has-tooltip"></span>
                     </div>
                     <div class="col mt-auto text-right text-md-center">
-                        <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning"></span>
+                        <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning has-tooltip"></span>
                     </div>
                     <div class="col-12 col-md mt-3 mt-md-auto text-right">
                         <div class="btn-group download-group">
                             <button type="button" class="torrent-download btn btn-danger btn-sm">
-                                <i class="fa fa-download" aria-hidden="true"></i>
+                                <i class="fa fa-download fa-fw" aria-hidden="true"></i>
                                 Descargar Torrent
                             </button>
                             <button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split"
@@ -523,7 +526,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="alert alert-warning">
-                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
                         Parece que el fichero torrent ya no existe... :(
                     </div>
                 </div>
@@ -651,7 +654,7 @@
                 </div>
                 <div class="modal-body">
                     <div id="schedules-none" class="alert alert-info">
-                        <i class="fa fa-info-circle" aria-hidden="true"></i>
+                        <i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>
                         No tienes ninguna búsqueda programada. Realiza una búsqueda y selecciona la opción de "Programar
                         esta búsqueda"
                     </div>
@@ -830,11 +833,11 @@
                     $('#search-results-container').empty()
                     $('#results-top-bar').show();
                     if (!response || !response.success) {
-                        $('#search-results-container').html('<div class="alert alert-danger mt-2"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>Se ha producido un error...</div>')
+                        $('#search-results-container').html('<div class="alert alert-danger mt-2"><i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>Se ha producido un error...</div>')
                         return;
                     }
                     if (!response.data.items) {
-                        $('#search-results-container').html('<div class="alert alert-info mt-2"><i class="fa fa-info-circle" aria-hidden="true"></i>No se han encontrado resultados</div>')
+                        $('#search-results-container').html('<div class="alert alert-info mt-2"><i class="fa fa-info-circle fa-fw" aria-hidden="true"></i>No se han encontrado resultados</div>')
                         return;
                     }
                     const page = params.pg;
@@ -880,6 +883,8 @@
                         $cont.find('.download-group').data('id', t.torrentID).data('guid', t.guid)
 
                         $('#search-results-container').append($cont)
+
+                        $cont.find('.has-tooltip').tooltip()
 
                         $cont.find('.torrent-download, .torrent-download-copy, .torrent-download-password').on('click', function (e) {
                             e.stopPropagation()
@@ -1005,9 +1010,9 @@
                     $('#schedule-search-modal').modal('hide');
                 }).fail(function (xhr) {
                     if (!xhr || !xhr.responseText)
-                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Ups! Se ha producido un error...').show();
+                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i> Ups! Se ha producido un error...').show();
                     else
-                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ' + xhr.responseText).show();
+                        $('#schedule-add-error').html('<i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i> ' + xhr.responseText).show();
                 }).always(function () {
                     $btn.prop('disabled', false).html(innerHTML);
                 });
