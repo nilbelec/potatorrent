@@ -998,7 +998,7 @@
                 const $btn = $(this);
                 $btn.prop('disabled', true);
                 const innerHTML = $btn.html();
-                $btn.html('<span class="spinner-border spinner-border-sm"></span> Buscando...');
+                $btn.html('<span class="spinner-border spinner-border-sm"></span> Guardando...');
 
                 const url = '/schedule';
                 $.postJSON(url, {
