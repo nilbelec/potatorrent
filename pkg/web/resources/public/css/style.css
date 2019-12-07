@@ -1,0 +1,150 @@
+body {
+    font-family: 'Lato', sans-serif;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+.btn-potato {
+    color: #fff;
+    background-color: #d99e82;
+    border: none;
+}
+
+.form-control {
+    border-radius: 0;
+}
+
+.fa-spinner {
+    color: #c8775e;
+}
+
+.btn-potato:hover,
+.btn-potato:active {
+    color: #fff;
+    background-color: #c8775e !important;
+}
+
+.btn-potato.disabled, .btn-potato:disabled {
+    background-color: #d99e82;
+ }
+
+
+.btn-potato:focus {
+    box-shadow: none;
+}
+
+.page-link {
+    color: #c8775e;
+}
+
+.page-link:hover {
+    color: #c8775e;
+}
+
+.page-item.active .page-link {
+    background-color: #d99e82;
+    border: none;
+    color: #fff;
+}
+
+.badge,
+.alert,
+.modal-content,
+.page-link {
+    border-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.dropdown-menu {
+    border-radius: 0 !important;
+    padding: 0;
+}
+
+.dropdown-divider {
+    margin: 0;
+}
+
+#title {
+    font-family: 'Anton', sans-serif;
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+#version {
+    font-size: .8rem;
+    position: absolute;
+    bottom: -3px;
+}
+
+#title:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+#new-version {
+    padding: 0.5rem;
+    color: #fff;
+    position: absolute;
+    right: 10px;
+}
+
+#top-bar {
+    box-shadow: 0px 2px 5px #000;
+}
+
+.torrent .torrent-title {
+    text-shadow: 0px 2px 2px #ccc;
+}
+
+.torrent .torrent-fecha {
+    font-size: .8rem;
+}
+
+.torrent .torrent-img {
+    transition: transform .2s ease-in-out;
+}
+
+.torrent .torrent-img:hover {
+    transform: scale(1.5);
+}
+
+#schedules {
+    position: absolute;
+    left: 10px;
+}
+
+#schedules {
+    transition: all .2s ease-in-out;
+}
+
+#schedules:hover {
+    transform: scale(1.2);
+}
+
+#schedules .badge {
+    right: -.6rem;
+    position: absolute;
+    top: -0.2rem;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 50%;
+    display: block;
+    width: 19px;
+    height: 19px;
+}
+
+#schedules-table th,
+#schedules-table td {
+    text-align: center;
+}
+
+.schedule-disabled {
+    opacity: 0.5;
+}
