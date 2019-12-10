@@ -30,6 +30,27 @@ type ScheduleSearch struct {
 	Disabled            bool                  `json:"disabled"`
 }
 
+func (ss *ScheduleSearch) String() string {
+	p := ss.Params
+	result := ""
+	if p.CategoriaTexto != "" {
+		result += p.CategoriaTexto
+	}
+	if p.SubCategoriaTexto != "" {
+		result += " - " + p.SubCategoriaTexto
+	}
+	if p.CalidadTexto != "" {
+		result += " - " + p.CalidadTexto
+	}
+	if p.Palabras != "" {
+		result += " - \"" + p.Palabras + "\""
+	}
+	if result == "" {
+		return "Cualquier torrent"
+	}
+	return strings.Trim(result, " - ")
+}
+
 // Scheduler is an Torrent scheduler
 type Scheduler struct {
 	c *crawler.Crawler
@@ -111,11 +132,11 @@ func (s *Scheduler) run(id string) {
 			time.Sleep(time.Duration(ss.Interval) * time.Minute)
 			continue
 		}
-		fmt.Printf("[%s] - Running\n", id)
+		fmt.Printf("[%s] - Running\n", ss)
 		r, err := s.c.Search(ss.Params, "1")
 		if err != nil {
 			ss.Error = err.Error()
-			fmt.Printf("[%s] - Error on Search: %v\n", id, ss.Error)
+			fmt.Printf("[%s] - Error on Search: %v\n", ss, ss.Error)
 			ss.LastExecution = time.Now()
 			s.f.Save(ss)
 			time.Sleep(time.Duration(ss.Interval) * time.Minute)
@@ -126,10 +147,10 @@ func (s *Scheduler) run(id string) {
 		for _, t := range ts {
 			if ss.LastTorrentID == "NONE" || t.TorrentID == ss.LastTorrentID {
 				ss.LastTorrentID = ""
-				fmt.Printf("[%s] - No new torrents found\n", id)
+				fmt.Printf("[%s] - No new torrents found\n", ss)
 				break
 			}
-			fmt.Printf("[%s] - Found new torrent \"%s\"\n", id, t.TorrentName)
+			fmt.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
 			s.downloadTorrent(t, ss)
 		}
 		if len(ts) > 0 {
@@ -140,7 +161,7 @@ func (s *Scheduler) run(id string) {
 		}
 		ss.LastExecution = time.Now()
 		s.f.Save(ss)
-		fmt.Printf("[%s] - Done for now\n", id)
+		fmt.Printf("[%s] - Done for now\n", ss)
 		time.Sleep(time.Duration(ss.Interval) * time.Minute)
 	}
 }

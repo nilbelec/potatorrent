@@ -297,15 +297,6 @@ $(function () {
         });
     });
 
-    $('#schedules').on('click', function () {
-        refreshSchedules();
-        $('#schedules-modal').modal('show');
-    });
-
-    $('#schedules-refresh-btn').on('click', function () {
-        refreshSchedules(true);
-    });
-
 
     const schedulesParentTemplate = document.getElementById('schedule-template-container');
     const scheduleTemplate = schedulesParentTemplate.innerHTML;
@@ -313,14 +304,27 @@ $(function () {
 
     let req;
     let to;
+
+    $('#schedules').on('click', function () {
+        $('#schedules-modal').modal('show');
+    });
+
+    $('#schedules-refresh-btn').on('click', function () {
+        refreshSchedules(true);
+    });
+
+    $('#schedules-modal').on('show.bs.modal', function(){
+        refreshSchedules(true);
+    })
+
+    $('#schedules-modal').on('hidden.bs.modal', function(){
+        to = setTimeout(refreshSchedules, schedulesRefreshTime);
+    })
+
     const schedulesRefreshTime = 10000;
-    function refreshSchedules(force) {
+    function refreshSchedules(show) {
         if (to) {
             clearTimeout(to);
-        }
-        if (!force && $('#schedules-modal').hasClass('show')) {
-            to = setTimeout(refreshSchedules, schedulesRefreshTime)
-            return;
         }
         if (req) {
             req.abort();
@@ -338,6 +342,10 @@ $(function () {
             }
             $('#schedules-none').hide();
             $('#schedules-count').text(response.length).show();
+            if (!show) {
+                to = setTimeout(refreshSchedules, schedulesRefreshTime);
+                return;
+            }
             const $tbody = $('#schedules-table tbody').empty();
             for (var k in response) {
                 const s = response[k];
@@ -364,7 +372,7 @@ $(function () {
                 $cont.find('.schedule-interval').text(s.interval);
                 $cont.find('.schedule-last-execution').text(moment(s.lastExecutionTime).fromNow());
 
-                $cont.find('.schedule-img').prop('src', '/image?path=' + (s.lastTorrentImage == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : s.lastTorrentImage))
+                $cont.find('.schedule-img').attr('data-src', '/image?path=' + (s.lastTorrentImage == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : s.lastTorrentImage))
                 if (s.lastTorrentName) {
                     $cont.find('.schedule-img').addClass('has-tooltip').prop('title', 'Último torrent encontrado: ' + s.lastTorrentName + ' - Publicado el ' + s.lastTorrentDate);
                 }
@@ -399,6 +407,7 @@ $(function () {
                         })
 
                 });
+
                 $cont.find('.schedule-disable').on('click', function () {
                     const $cont = $(this).closest('.schedule');
                     const id = $cont.data('schedule-id');
@@ -438,7 +447,7 @@ $(function () {
                 });
             }
             $('#schedules-results').show();
-            to = setTimeout(refreshSchedules, schedulesRefreshTime)
+            lazyload();
         });
     }
     refreshSchedules();

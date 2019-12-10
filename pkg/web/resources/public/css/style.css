@@ -148,3 +148,11 @@ body {
 .schedule-disabled {
     opacity: 0.5;
 }
+
+.schedule .schedule-img {
+    transition: transform .2s ease-in-out;
+}
+
+.schedule .schedule-img:hover {
+    transform: scale(1.2);
+}
