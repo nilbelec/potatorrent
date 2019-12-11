@@ -8,7 +8,6 @@ import (
 	"github.com/nilbelec/potatorrent/pkg/github"
 	"github.com/nilbelec/potatorrent/pkg/scheduler"
 	"github.com/nilbelec/potatorrent/pkg/web/download"
-	"github.com/nilbelec/potatorrent/pkg/web/home"
 	"github.com/nilbelec/potatorrent/pkg/web/image"
 	"github.com/nilbelec/potatorrent/pkg/web/resources"
 	"github.com/nilbelec/potatorrent/pkg/web/router"
@@ -37,7 +36,6 @@ func (s *Server) Start(address string) {
 
 func (s *Server) router() *router.Router {
 	r := router.New()
-	r.AddHandler(home.NewHandler())
 	r.AddHandler(search.NewHandler(s.crawler))
 	r.AddHandler(image.NewHandler(s.crawler))
 	r.AddHandler(download.NewHandler(s.crawler))
