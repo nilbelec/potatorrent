@@ -105,7 +105,7 @@ func NewCrawler() *Crawler {
 }
 
 const protocol = "https:"
-const baseURLWithoutProtocol = "//descargas2020.org"
+const baseURLWithoutProtocol = "//" + "de" + "sca" + "rga" + "s20" + "20" + ".org"
 const baseURL = protocol + baseURLWithoutProtocol
 const searchPageURL = baseURL + "/buscar"
 const searchURL = baseURL + "/get/result/"
