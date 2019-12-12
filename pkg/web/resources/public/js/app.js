@@ -21,15 +21,11 @@ $(function () {
             $('#search-input').prop('disabled', false);
             $('#categoria').prop('disabled', false).select2({
                 placeholder: 'Elige una categoría',
-                width: '100%',
-                allowClear: true,
-                theme: 'bootstrap4'
+                allowClear: true
             });
             $('#calidad').prop('disabled', false).select2({
                 placeholder: 'Elige la calidad del contenido',
-                width: '100%',
-                allowClear: true,
-                theme: 'bootstrap4'
+                allowClear: true
             });
         });
 
@@ -39,9 +35,7 @@ $(function () {
 
     $('#subcategoria').select2({
         placeholder: 'Elige una subcategoría',
-        allowClear: true,
-        width: '100%',
-        theme: 'bootstrap4'
+        allowClear: true
     });
 
     function appendOptions(selector, map) {
@@ -237,6 +231,16 @@ $(function () {
     $('#schedule-search').on('click', function () {
         $('#schedule-search-modal').modal('show');
     })
+
+    $('#schedule-add-folder').select2({
+        dropdownParent: $("#schedule-search-modal"),
+        placeholder: 'Ruta del directorio',
+        ajax: {
+            url: '/folder',
+            dataType: 'json',
+            delay: 100
+        }
+    });
 
     $('#schedule-search-modal').on('show.bs.modal', function () {
         const params = $('#search-container').data('params');

@@ -33,3 +33,7 @@ $.warning = function (text) {
 
 $.fn.tooltip.Constructor.Default.boundary = 'viewport';
 $.fn.tooltip.Constructor.Default.delay = { "show": 500, "hide": 100 };
+
+$.fn.select2.defaults.set("theme", "bootstrap4");
+$.fn.select2.defaults.set("width", "100%");
+$.fn.select2.defaults.set("language", "es");
