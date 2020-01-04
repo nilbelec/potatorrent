@@ -105,11 +105,11 @@ func NewCrawler() *Crawler {
 }
 
 const protocol = "https:"
-const baseURLWithoutProtocol = "//" + "de" + "sca" + "rga" + "s20" + "20" + ".org"
+const baseURLWithoutProtocol = "//" + "pc" + "tne" + "w.org" //"de" + "sca" + "rga" + "s20" + "20" + ".org"
 const baseURL = protocol + baseURLWithoutProtocol
 const searchPageURL = baseURL + "/buscar"
 const searchURL = baseURL + "/get/result/"
-const subcategoriesURL = baseURL + "/d20/library/include/ajax/get_subcategory.php"
+const subcategoriesURL = baseURL + "/pctn/library/include/ajax/get_subcategory.php"
 
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36"
 
