@@ -153,7 +153,7 @@ $(function () {
                 $cont.find('.torrent-calidad').text(t.calidad)
                 $cont.find('.torrent-fecha').text(t.torrentDateAdded)
                 $cont.find('.torrent-tamano').text(t.torrentSize)
-                $cont.find('.download-group').data('id', t.torrentID).data('guid', t.guid)
+                $cont.find('.download-group').data('id', t.torrentID).data('guid', t.guid).data('date', t.torrentDateAdded)
 
                 $('#search-results-container').append($cont)
 
@@ -173,8 +173,9 @@ $(function () {
 
                     const id = $group.data('id');
                     const guid = $group.data('guid');
+                    const date = $group.data('date');
 
-                    $.getJSON('/download', { id: id, guid: guid })
+                    $.getJSON('/download', { id: id, guid: guid, date: date })
                         .done(function (response) {
                             $group.data('download-data', response);
                             processDownloadData($btn);

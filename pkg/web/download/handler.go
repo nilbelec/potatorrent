@@ -28,7 +28,8 @@ func (h *Handler) Routes() router.Routes {
 func (h *Handler) downloadTorrent(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
 	id := r.URL.Query().Get("id")
-	result, err := h.c.Download(id, guid)
+	date := r.URL.Query().Get("date")
+	result, err := h.c.Download(id, date, guid)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

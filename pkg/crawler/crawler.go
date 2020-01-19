@@ -134,27 +134,29 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 	return &r, err
 }
 
-func (c *Crawler) Download(id string, path string) (*SearchTorrentResult, error) {
+func (c *Crawler) Download(id string, date string, path string) (*SearchTorrentResult, error) {
 	url := baseURL + "/" + path
 	result, err := findTorrent(id, url)
 	if err == nil {
 		return result, nil
 	}
-	return trySearchTorrent(id, url)
+	return trySearchTorrent(id, date, url)
 }
 
-func trySearchTorrent(id string, url string) (*SearchTorrentResult, error) {
+func trySearchTorrent(id string, date string, url string) (*SearchTorrentResult, error) {
 	pg := 1
 	for {
 		u := fmt.Sprint(url, "/pg/", pg)
+		log.Println("Searching for torrent " + id + " in " + u)
 		doc, err := getAndParse(u)
 		if err != nil {
 			return nil, errors.New("Error parsing request: " + err.Error())
 		}
-		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li")
-		if len(lis) == 0 {
+		any := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li")
+		if len(any) == 0 {
 			return &SearchTorrentResult{}, nil
 		}
+		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
 			dp := extractLiDownloadPage(li)
 			bytes, err := findTorrent(id, dp)
@@ -173,7 +175,7 @@ func extractLiDownloadPage(li *html.Node) string {
 }
 
 func findTorrent(id string, url string) (*SearchTorrentResult, error) {
-	println("Searching for torrent " + id + " in " + url)
+	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())

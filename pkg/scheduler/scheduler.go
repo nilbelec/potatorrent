@@ -167,7 +167,7 @@ func (s *Scheduler) run(id string) {
 }
 
 func (s *Scheduler) downloadTorrent(t *crawler.Torrent, ss *ScheduleSearch) error {
-	result, err := s.c.Download(t.TorrentID, t.GUID)
+	result, err := s.c.Download(t.TorrentID, t.TorrentDateAdded, t.GUID)
 	if err != nil {
 		return err
 	}
