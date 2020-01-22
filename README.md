@@ -9,10 +9,21 @@
 
 Simple web-application written in Go to download torrent files
 
+## Usage
+
+Just grab one of the pre-built executable files for you OS from the releases tab and launch it. It should open a new web browser tab with the application.
+
+If no browser tab is opened, open your web browser and navigate to:
+
+```
+http://localhost:8080
+```
+
+By default it will be launch using port 8080, but you can change it setting the PORT environment variable before launch.
 
 ## Build
 
-```go
+```bash
 $ go get github.com/mitchellh/gox
 $ go get github.com/gobuffalo/packr/packr
 $ packr
