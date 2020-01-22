@@ -1,7 +1,4 @@
-[![Build Status](https://travis-ci.com/nilbelec/potatorrent.svg?branch=master)](https://travis-ci.com/nilbelec/potatorrent)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nilbelec/potatorrent)](https://goreportcard.com/report/github.com/nilbelec/potatorrent)
-
-# potatorrent [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nilbelec/potatorrent)](https://github.com/nilbelec/potatorrent/releases)
+# potatorrent [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nilbelec/potatorrent)](https://github.com/nilbelec/potatorrent/releases) [![Build Status](https://travis-ci.com/nilbelec/potatorrent.svg?branch=master)](https://travis-ci.com/nilbelec/potatorrent) [![Go Report Card](https://goreportcard.com/badge/github.com/nilbelec/potatorrent)](https://goreportcard.com/report/github.com/nilbelec/potatorrent)
 
 Simple web-application written in Go to download torrent files
 
