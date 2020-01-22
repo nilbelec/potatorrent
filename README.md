@@ -11,7 +11,7 @@ Simple web-application written in Go to download torrent files
 
 ## Usage
 
-Just grab one of the pre-built executable files for you OS from the releases tab and launch it. It should open a new web browser tab with the application.
+Just grab one of the pre-built executable files for you OS from the [releases](https://github.com/nilbelec/potatorrent/releases) tab and launch it. It should open a new web browser tab with the application.
 
 If no browser tab is opened, open your web browser and navigate to:
 
