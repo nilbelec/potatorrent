@@ -185,10 +185,12 @@ func findTorrent(id string, url string) (*SearchTorrentResult, error) {
 	if len(match) == 0 {
 		return nil, errors.New("Unable to find the download link")
 	}
-	return &SearchTorrentResult{
+	r := &SearchTorrentResult{
 		Url:      protocol + strings.Trim(match[0], "\""),
 		Password: findPassword(url),
-	}, nil
+	}
+	log.Println("Found torrent file for " + id + ": " + r.Url)
+	return r, nil
 }
 
 func findPassword(url string) string {
