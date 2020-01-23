@@ -20,9 +20,14 @@ http://localhost:8080
 
 By default it will be launch using port 8080, but you can change it setting the PORT environment variable before launch.
 
+```bash
+$ export PORT=8989
+$ ./potatorrent
+```
+
 ## Build
 
-Potatorrent was develop using [go](https://golang.org/). To build it just clone the code and run:
+Potatorrent is developed using [go](https://golang.org/). To build it just clone the code and run:
 
 ```bash
 $ cd cmd/potatorrent
