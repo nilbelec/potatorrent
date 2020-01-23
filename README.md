@@ -10,9 +10,9 @@ If you like it and want to support development, you can buy me a coffee! :)
 
 ## Usage
 
-Just grab one of the pre-built executable files for you OS from the [releases](https://github.com/nilbelec/potatorrent/releases) tab and launch it. It should open a new web browser tab with the application.
+Just grab one of the pre-built executable files for your OS from the [releases](https://github.com/nilbelec/potatorrent/releases) page and launch it. It should open a new web browser tab with the application.
 
-If no browser tab is opened, open your web browser and navigate to:
+If no tab is opened, open your web browser and navigate to:
 
 ```
 http://localhost:8080
