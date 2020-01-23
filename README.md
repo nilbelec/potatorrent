@@ -22,11 +22,10 @@ By default it will be launch using port 8080, but you can change it setting the 
 
 ## Build
 
+Potatorrent was develop using [go](https://golang.org/). To build it just clone the code and run:
+
 ```bash
-$ go get github.com/mitchellh/gox
-$ go get github.com/gobuffalo/packr/packr
-$ packr
-$ go get -t -v ./...
-$ gox -osarch="linux/arm linux/amd64 windows/amd64 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}"
-  -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
+$ cd cmd/potatorrent
+$ go get
+$ go built
 ```
