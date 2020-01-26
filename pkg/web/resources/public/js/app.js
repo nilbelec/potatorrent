@@ -460,9 +460,21 @@ $(function () {
             }
             $('#schedules-results').show();
             lazyload();
+            filterSchedules();
         });
     }
     refreshSchedules();
+
+    $('#schedules-filter').on('keyup', function(){
+        filterSchedules();
+    })
+    function filterSchedules(){
+        $('#schedules-modal .schedule').show();
+        const filter = $('#schedules-filter').val().trim();
+        if (!filter)
+            return;
+        $('#schedules-modal .schedule:not(:containsi(' + filter + '))').hide();
+    }
 
     function isPositiveInteger(str) {
         var n = Math.floor(Number(str));

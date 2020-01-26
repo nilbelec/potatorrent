@@ -22,8 +22,9 @@
 </head>
 
 <body>
-    <div aria-live="polite" aria-atomic="true" style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 1040;">
-        <div id="notification" class="toast fade hide" data-delay="3000" style="border-radius:0;">            
+    <div aria-live="polite" aria-atomic="true"
+        style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 1040;">
+        <div id="notification" class="toast fade hide" data-delay="3000" style="border-radius:0;">
             <div class="toast-body alert text-center" style="margin-bottom: 0;">
                 <strong id="notification-text">
                     Enlace copiado al portapapeles
@@ -43,8 +44,8 @@
             potatorrent
             <span id="version" class="badge badge-danger"></span>
         </a>
-        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/releases" class="badge badge-success my-1"
-            data-toggle="tooltip" data-placement="left" style="display: none;">
+        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/releases"
+            class="badge badge-success my-1" data-toggle="tooltip" data-placement="left" style="display: none;">
             <i class="fa fa-bell fa-fw"></i>
         </a>
     </div>
@@ -104,10 +105,12 @@
                     </div>
                     <div class="w-100"></div>
                     <div class="col mt-auto">
-                        <span title="Calidad o tipo de elemento" class="torrent-calidad badge badge-info has-tooltip"></span>
+                        <span title="Calidad o tipo de elemento"
+                            class="torrent-calidad badge badge-info has-tooltip"></span>
                     </div>
                     <div class="col mt-auto text-right text-md-center">
-                        <span title="Tamaño de la descarga" class="torrent-tamano badge badge-warning has-tooltip"></span>
+                        <span title="Tamaño de la descarga"
+                            class="torrent-tamano badge badge-warning has-tooltip"></span>
                     </div>
                     <div class="col-12 col-md mt-3 mt-md-auto text-right">
                         <div class="btn-group download-group">
@@ -236,7 +239,7 @@
     </div>
 
     <div id="schedule-template-container" hidden>
-        <div class="schedule row py-1">
+        <div class="schedule row py-3">
             <div class="col-auto my-auto">
                 <img class="schedule-img lazyload rounded" src="/public/img/loading.png" width="56" height="80">
             </div>
@@ -245,10 +248,14 @@
                     <div class="col">
                         <div class="row">
                             <div class="col">
-                                <span class="schedule-categoria badge badge-info has-tooltip" title="Categoría de la búsqueda"></span>
-                                <span class="schedule-subcategoria badge badge-info has-tooltip" title="Subategoría de la búsqueda"></span>
-                                <span class="schedule-calidad badge badge-info has-tooltip" title="Calidad de la búsqueda"></span>
-                                <span class="schedule-palabras badge badge-info has-tooltip" title="Términos de búsqueda"></span>
+                                <span class="schedule-categoria badge badge-info has-tooltip"
+                                    title="Categoría de la búsqueda"></span>
+                                <span class="schedule-subcategoria badge badge-info has-tooltip"
+                                    title="Subategoría de la búsqueda"></span>
+                                <span class="schedule-calidad badge badge-info has-tooltip"
+                                    title="Calidad de la búsqueda"></span>
+                                <span class="schedule-palabras badge badge-info has-tooltip"
+                                    title="Términos de búsqueda"></span>
                             </div>
                             <div class="col-auto">
                                 <strong>Lanzada</strong>
@@ -260,8 +267,10 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <span class="schedule-last-torrent-date mt-2 badge badge-success has-tooltip" title="Fecha de publicación del último torrent encontrado"></span>
-                                <small class="schedule-last-torrent has-tooltip" title="Último torrent encontrado"></small>
+                                <span class="schedule-last-torrent-date mt-2 badge badge-success has-tooltip"
+                                    title="Fecha de publicación del último torrent encontrado"></span>
+                                <small class="schedule-last-torrent has-tooltip"
+                                    title="Último torrent encontrado"></small>
                             </div>
                         </div>
                     </div>
@@ -291,7 +300,8 @@
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Búsquedas programadas</h5>
+                    <h5 class="modal-title w-auto">Búsquedas programadas</h5>
+                    <input id="schedules-filter" type="text" class="form-control form-control-sm w-auto ml-4" placeholder="Filtrar...">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
