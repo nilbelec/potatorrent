@@ -377,9 +377,16 @@ $(function () {
                 $cont.find('.schedule-interval').text(s.interval);
                 $cont.find('.schedule-last-execution').text(moment(s.lastExecutionTime).fromNow());
 
-                $cont.find('.schedule-img').attr('data-src', '/image?path=' + (s.lastTorrentImage == '/pictures/f/thumbs/' ? '/d20/library/content/template/images/no-imagen.jpg' : s.lastTorrentImage))
+                if (!s.lastTorrentImage || s.lastTorrentImage == '/pictures/f/thumbs/') {
+                    $cont.find('.schedule-img').attr('data-src', '/image?path=/pctn/library/content/template/images/no-imagen.jpg');
+                } else {
+                    $cont.find('.schedule-img').attr('data-src', '/image?path=' + s.lastTorrentImage)
+                }
+                
+                
                 if (s.lastTorrentName) {
-                    $cont.find('.schedule-img').addClass('has-tooltip').prop('title', 'Último torrent encontrado: ' + s.lastTorrentName + ' - Publicado el ' + s.lastTorrentDate);
+                    $cont.find('.schedule-last-torrent').text(s.lastTorrentName);
+                    $cont.find('.schedule-last-torrent-date').text(s.lastTorrentDate);
                 }
 
                 if (s.disabled) {

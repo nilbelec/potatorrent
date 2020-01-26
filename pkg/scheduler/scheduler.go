@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	random "math/rand"
 	"os"
 	"strings"
@@ -132,11 +133,11 @@ func (s *Scheduler) run(id string) {
 			time.Sleep(time.Duration(ss.Interval) * time.Minute)
 			continue
 		}
-		fmt.Printf("[%s] - Running\n", ss)
+		log.Printf("[%s] - Running\n", ss)
 		r, err := s.c.Search(ss.Params, "1")
 		if err != nil {
 			ss.Error = err.Error()
-			fmt.Printf("[%s] - Error on Search: %v\n", ss, ss.Error)
+			log.Printf("[%s] - Error on Search: %v\n", ss, ss.Error)
 			ss.LastExecution = time.Now()
 			s.f.Save(ss)
 			time.Sleep(time.Duration(ss.Interval) * time.Minute)
@@ -147,10 +148,10 @@ func (s *Scheduler) run(id string) {
 		for _, t := range ts {
 			if ss.LastTorrentID == "NONE" || t.TorrentID == ss.LastTorrentID {
 				ss.LastTorrentID = ""
-				fmt.Printf("[%s] - No new torrents found\n", ss)
+				log.Printf("[%s] - No new torrents found\n", ss)
 				break
 			}
-			fmt.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
+			log.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
 			s.downloadTorrent(t, ss)
 		}
 		if len(ts) > 0 {
@@ -161,7 +162,7 @@ func (s *Scheduler) run(id string) {
 		}
 		ss.LastExecution = time.Now()
 		s.f.Save(ss)
-		fmt.Printf("[%s] - Done for now\n", ss)
+		log.Printf("[%s] - Done for now\n", ss)
 		time.Sleep(time.Duration(ss.Interval) * time.Minute)
 	}
 }

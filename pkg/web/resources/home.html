@@ -238,23 +238,32 @@
     <div id="schedule-template-container" hidden>
         <div class="schedule row py-1">
             <div class="col-auto my-auto">
-                <img class="schedule-img lazyload rounded" src="/public/img/loading.png" width="42" height="60">
+                <img class="schedule-img lazyload rounded" src="/public/img/loading.png" width="56" height="80">
             </div>
             <div class="col">
                 <div class="row h-100 align-items-center">
                     <div class="col">
-                        <span class="schedule-categoria badge badge-info has-tooltip" title="Categoría"></span>
-                        <span class="schedule-subcategoria badge badge-info has-tooltip" title="Subategoría"></span>
-                        <span class="schedule-calidad badge badge-info has-tooltip" title="Calidad"></span>
-                        <span class="schedule-palabras badge badge-info has-tooltip"
-                            title="Términos de búsqueda"></span>
-                    </div>
-                    <div class="col-auto">
-                        <strong>Lanzada</strong>
-                        <span class="schedule-last-execution badge badge-secondary">-</span>
-                        y cada
-                        <span class="schedule-interval badge badge-secondary">-</span>
-                        minutos
+                        <div class="row">
+                            <div class="col">
+                                <span class="schedule-categoria badge badge-info has-tooltip" title="Categoría de la búsqueda"></span>
+                                <span class="schedule-subcategoria badge badge-info has-tooltip" title="Subategoría de la búsqueda"></span>
+                                <span class="schedule-calidad badge badge-info has-tooltip" title="Calidad de la búsqueda"></span>
+                                <span class="schedule-palabras badge badge-info has-tooltip" title="Términos de búsqueda"></span>
+                            </div>
+                            <div class="col-auto">
+                                <strong>Lanzada</strong>
+                                <span class="schedule-last-execution badge badge-secondary">-</span>
+                                y cada
+                                <span class="schedule-interval badge badge-secondary">-</span>
+                                minutos
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <span class="schedule-last-torrent-date mt-2 badge badge-success has-tooltip" title="Fecha de publicación del último torrent encontrado"></span>
+                                <small class="schedule-last-torrent has-tooltip" title="Último torrent encontrado"></small>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-auto">
                         <i class="schedule-folder text-warning fa fa-2x fa-fw fa-folder"></i>
