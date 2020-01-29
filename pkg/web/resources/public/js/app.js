@@ -143,7 +143,7 @@ $(function () {
                     doSearch();
                 })
             }
-            const firstTorrent = true;
+            
             for (let k in response.data.torrents["0"]) {
                 const t = response.data.torrents["0"][k];
 
@@ -189,7 +189,7 @@ $(function () {
                     const $group = $btn.closest('.download-group');
                     const data = $group.data('download-data')
                     if (!data || !data.url) {
-                        $('#not-found-modal').modal('show');
+                        $.warning('Parece que el torrent ya no existe...');
                         return;
                     }
                     if ($btn.hasClass('torrent-download')) {
@@ -203,7 +203,7 @@ $(function () {
                         $.success('Enlace copiado al portapapeles :)');
                     } else if ($btn.hasClass('torrent-download-password')) {
                         if (!data.password) {
-                            $.success('Este torrent no parece necesitar ninguna contraseña');
+                            $.info('Este torrent no parece necesitar ninguna contraseña');
                             return;
                         }
                         $('#password').text(data.password);
@@ -224,6 +224,9 @@ $(function () {
                 };
             }
             lazyload();
+        }).fail(function(){
+            $('#search-results-container').empty()
+            $.error("Ups! Se ha producido un error...");
         }).always(function (){
             $('#search').prop('disabled', false);
         })
@@ -413,7 +416,7 @@ $(function () {
                             $btn.hide().tooltip('dispose');
                             $cont.find('.schedule-disable').show().tooltip();
                         }).fail(function () {
-
+                            $.error("Ups! Se ha producido un error...")
                         }).always(function () {
                             $btn.prop('disabled', false).html(innerHTML);
                         })
@@ -452,7 +455,7 @@ $(function () {
                             $btn.tooltip('dispose');
                             refreshSchedules(true);
                         }).fail(function () {
-
+                            $.error("Ups! Se ha producido un error...")
                         }).always(function () {
                             $btn.prop('disabled', false).html(innerHTML);
                         })

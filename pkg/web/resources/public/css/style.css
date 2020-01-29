@@ -156,3 +156,46 @@ body {
 .schedule .schedule-img:hover {
     transform: scale(1.2);
 }
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateX(450px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast {
+    border-radius: 0;
+    border: 0;
+    color: #fff;
+    background-color: #33b5e5;
+    box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 0.9rem;
+    width: 400px;
+    max-width: 400px;
+    text-align: center;
+    animation: slide-up 0.4s ease;
+}
+
+.toast.toast-success {
+    background-color: #00c851;
+}
+
+.toast.toast-danger {
+    background-color: #ff3547;
+}
+
+.toast.toast-warning {
+    background-color: #fb3;
+}
+
+.toast .toast-body i {
+    font-size: 2rem;
+    vertical-align: middle;
+}

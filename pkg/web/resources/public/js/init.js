@@ -20,23 +20,30 @@ $.delete = function (url) {
         method: 'DELETE'
     });
 }
+
+const toastParentTemplate = document.getElementById('toast-template-container');
+const toastTemplate = toastParentTemplate.innerHTML;
+toastParentTemplate.remove()
+
+$.showNotification = function(text, type, icon) {
+    const $toast = $(toastTemplate);
+    $toast.find('.toast-body i.fa').addClass(icon);
+    $toast.addClass('toast-' + type).find('.toast-body .toast-text').text(text);
+    $('#notifications').prepend($toast);
+    $toast.toast('show');
+}
+
+$.info = function (text) {
+    $.showNotification(text, 'info', 'fa-info-circle');
+}
 $.success = function (text) {
-    $('#notification-text').closest('.alert').removeClass('alert-danger alert-warning').addClass('alert-success');
-    $('#notification-text').text(text);
-    $('#notification').toast('dispose')
-    $('#notification').toast('show');
+    $.showNotification(text, 'success', 'fa-check-square-o');
 }
 $.error = function (text) {
-    $('#notification-text').closest('.alert').removeClass('alert-success alert-warning').addClass('alert-danger');
-    $('#notification-text').text(text);
-    $('#notification').toast('dispose')
-    $('#notification').toast('show');
+    $.showNotification(text, 'danger', 'fa-exclamation-triangle');
 }
 $.warning = function (text) {
-    $('#notification-text').closest('.alert').removeClass('alert-danger alert-success').addClass('alert-warning');
-    $('#notification-text').text(text);
-    $('#notification').toast('dispose')
-    $('#notification').toast('show');
+    $.showNotification(text, 'warning', 'fa-exclamation-circle');
 }
 
 $.fn.tooltip.Constructor.Default.boundary = 'viewport';

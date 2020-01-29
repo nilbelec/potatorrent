@@ -22,13 +22,13 @@
 </head>
 
 <body>
-    <div aria-live="polite" aria-atomic="true"
-        style="position: fixed;top: 10px;min-height: 200px;right: 10px;z-index: 1040;">
-        <div id="notification" class="toast fade hide" data-delay="3000" style="border-radius:0;">
-            <div class="toast-body alert text-center" style="margin-bottom: 0;">
-                <strong id="notification-text">
-                    Enlace copiado al portapapeles
-                </strong>
+    <div id="notifications" class="position-fixed" style="z-index:1040;top:10px;right:10px;">
+        <div id ="toast-template-container" hidden>
+            <div class="toast fade hide" data-delay="3000">
+                <div class="toast-body">
+                    <i class="fa fa-fw fa-clock-o"></i>
+                    <span class="toast-text"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -151,23 +151,6 @@
                 </div>
                 <div class="modal-body">
                     <span id="password" class="bg-danger d-block p-3 text-center text-light"></span>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="not-found-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
-                        Parece que el fichero torrent ya no existe... :(
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
