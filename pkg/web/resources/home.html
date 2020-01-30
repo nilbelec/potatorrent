@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css">
 
     <link rel="stylesheet" type="text/css" href="/public/css/select2.bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/animations.css">
     <link rel="stylesheet" type="text/css" href="/public/css/style.css">
 </head>
 
@@ -26,7 +27,7 @@
         <div id ="toast-template-container" hidden>
             <div class="toast fade hide" data-delay="3000">
                 <div class="toast-body">
-                    <i class="fa fa-fw fa-clock-o"></i>
+                    <i class="fa fa-fw"></i>
                     <span class="toast-text"></span>
                 </div>
             </div>
@@ -34,7 +35,7 @@
     </div>
 
     <div id="top-bar" class="bg-dark text-light sticky-top text-center py-1 px-3">
-        <button id="schedules" class="btn float-left p-0 text-light" data-toggle="tooltip" data-placement="right"
+        <button id="schedules" class="btn p-0 text-light" data-toggle="tooltip" data-placement="right"
             title="Búsquedas programadas">
             <i class="fa fa-2x fa-fw fa-clock-o" aria-hidden="true"></i>
             <span id="schedules-count" class="badge badge-primary" style="display: none;"></span>
@@ -42,11 +43,10 @@
         <a id="title" href="#">
             <img height="36px" src="/public/img/logo.png" />
             potatorrent
-            <span id="version" class="badge badge-danger"></span>
         </a>
-        <a id="new-version" target="_blank" href="https://github.com/nilbelec/potatorrent/releases"
-            class="badge badge-success my-1" data-toggle="tooltip" data-placement="left" style="display: none;">
-            <i class="fa fa-bell fa-fw"></i>
+        <a id="github-link" class="btn p-0 text-light" target="_blank" href="https://github.com/nilbelec/potatorrent/" 
+            data-toggle="tooltip" title="Visita la página del proyecto en GitHub" data-placement="left">
+            <i class="fa fa-2x fa-github fa-fw"></i>
         </a>
     </div>
     <main class="py-4">

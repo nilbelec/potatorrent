@@ -69,6 +69,10 @@ body {
     margin: 0;
 }
 
+.text-blink {
+    animation: blink 1s ease-in-out;
+}
+
 #title {
     font-family: 'Anton', sans-serif;
     font-size: 1.5rem;
@@ -81,6 +85,7 @@ body {
     font-size: .8rem;
     position: absolute;
     bottom: -3px;
+    animation: slide-down 0.4s ease;
 }
 
 #title:hover {
@@ -88,11 +93,19 @@ body {
     color: inherit;
 }
 
-#new-version {
-    padding: 0.5rem;
-    color: #fff;
+#github-link {
+    border-radius: 6px;
     position: absolute;
     right: 10px;
+    transition: transform .2s ease-in-out;
+}
+
+#github-link:hover {
+    transform: scale(1.2);
+}
+
+#github-link i.fa {
+    width: 2.2rem;
 }
 
 #top-bar {
@@ -118,14 +131,15 @@ body {
 #schedules {
     position: absolute;
     left: 10px;
-}
-
-#schedules {
-    transition: all .2s ease-in-out;
+    transition: transform .2s ease-in-out;
 }
 
 #schedules:hover {
     transform: scale(1.2);
+}
+
+#schedules i.fa {
+    width: 2.2rem;
 }
 
 #schedules .badge {
@@ -157,17 +171,6 @@ body {
     transform: scale(1.2);
 }
 
-@keyframes slide-up {
-    0% {
-        opacity: 0;
-        transform: translateX(450px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
 .toast {
     border-radius: 0;
     border: 0;
@@ -180,7 +183,7 @@ body {
     width: 400px;
     max-width: 400px;
     text-align: center;
-    animation: slide-up 0.4s ease;
+    animation: slide-left 0.4s ease;
 }
 
 .toast.toast-success {

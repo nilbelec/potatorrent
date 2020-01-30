@@ -3,14 +3,19 @@ $(function () {
         .done(function (response) {
             if (!response)
                 return;
-            $('#version').html(response.current);
+            $('#title').append('<span id="version" class="badge badge-danger">' + response.current + '</span>')
             if (response.current !== response.latest) {
-                $('#new-version').prop('title', 'Hay una nueva versión disponible: ' + response.latest);
-                $('#new-version').show().tooltip()
+                const msg = 'Hay una nueva versión disponible: ' + response.latest;
+                $('#github-link')
+                    .prop('href', 'https://github.com/nilbelec/potatorrent/releases')
+                    .toggleClass('text-blink bg-success')
+                    .prop('title', msg)
+                    .tooltip('dispose').tooltip();
             }
         });
 
     $('#schedules').tooltip();
+    $('#github-link').tooltip();
 
     $.getJSON("/options")
         .done(function (response) {
