@@ -84,7 +84,7 @@ $(function () {
     const torrentTemplate = torrentParentTemplate.innerHTML;
     torrentParentTemplate.remove()
 
-    const loading = '<div class="text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>';
+    const loading = '<div class="loading-icon text-center"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>';
 
     $('#search').on('click', function () {
         $('#search-container').data('params', {

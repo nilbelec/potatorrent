@@ -2,6 +2,13 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+.tooltip.show {
+    opacity: .8;
+}
+.tooltip-inner {
+    border-radius: 0;
+}
+
 .btn {
     border-radius: 0;
 }
@@ -82,10 +89,11 @@ body {
 }
 
 #version {
+    transform: rotate(-6deg);
     font-size: .8rem;
     position: absolute;
     bottom: -3px;
-    animation: slide-down 0.4s ease;
+    animation: slide-down-rotate .5s ease-out;
 }
 
 #title:hover {
@@ -110,6 +118,10 @@ body {
 
 #top-bar {
     box-shadow: 0px 2px 5px #000;
+}
+
+.torrent {
+    animation: slide-up .6s ease-in-out;
 }
 
 .torrent .torrent-title {
@@ -183,7 +195,7 @@ body {
     width: 400px;
     max-width: 400px;
     text-align: center;
-    animation: slide-left 0.4s ease;
+    animation: slide-right 0.4s ease;
 }
 
 .toast.toast-success {
