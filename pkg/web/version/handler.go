@@ -11,8 +11,7 @@ import (
 )
 
 type appVersion struct {
-	Latest  string `json:"latest"`
-	Current string `json:"current"`
+	Version string `json:"version"`
 }
 
 // Handler handles the search requests
@@ -29,18 +28,32 @@ func NewHandler(c *github.Client) *Handler {
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
 		router.Route{Path: "/version", Method: "GET", Accepts: "application/json", HandlerFunc: h.getVersion},
+		router.Route{Path: "/latest", Method: "GET", Accepts: "application/json", HandlerFunc: h.getLatest},
 	}
 }
 
-func (h *Handler) getVersion(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) getLatest(w http.ResponseWriter, r *http.Request) {
 	l, err := h.c.LatestVersion()
 	if err != nil {
 		http.Error(w, "Error while checking latest version", http.StatusInternalServerError)
 		return
 	}
 	version := appVersion{
-		Current: version.Current,
-		Latest:  l,
+		Version: l,
+	}
+	data, err := json.Marshal(version)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+func (h *Handler) getVersion(w http.ResponseWriter, r *http.Request) {
+	version := appVersion{
+		Version: version.Current,
 	}
 	data, err := json.Marshal(version)
 	if err != nil {

@@ -1,18 +1,30 @@
 $(function () {
     $.getJSON("/version")
-        .done(function (response) {
-            if (!response)
+        .done(function (r) {
+            if (!r)
                 return;
-            $('#title').append('<span id="version" class="badge badge-danger">' + response.current + '</span>')
-            if (response.current !== response.latest) {
-                const msg = 'Hay una nueva versión disponible: ' + response.latest;
-                $('#github-link')
-                    .prop('href', 'https://github.com/nilbelec/potatorrent/releases')
-                    .toggleClass('text-blink bg-success')
-                    .prop('title', msg)
-                    .tooltip('dispose').tooltip();
-            }
+            const current = r.version;
+            $('#title').append('<span id="version" class="badge badge-danger">' + current + '</span>');
+            checkLatestVersion(current);
         });
+
+    function checkLatestVersion(current) {
+        $.getJSON("/latest")
+            .done(function (response) {
+                if (!response)
+                    return;
+                const latest = response.version;
+                if (current !== latest) {
+                    const msg = 'Hay una nueva versión disponible: ' + latest;
+                    $('#github-link')
+                        .prop('href', 'https://github.com/nilbelec/potatorrent/releases')
+                        .toggleClass('text-blink bg-success')
+                        .prop('title', msg)
+                        .tooltip('dispose').tooltip();
+                }
+            });
+    }
+    
 
     $('#schedules').tooltip();
     $('#github-link').tooltip();
