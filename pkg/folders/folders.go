@@ -7,13 +7,7 @@ import (
 
 // FoldersResults is folder search results
 type FoldersResults struct {
-	Results []*FoldersResult `json:"results"`
-}
-
-// FoldersResult is folder search result
-type FoldersResult struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
+	Results []string `json:"results"`
 }
 
 func Search(q string) *FoldersResults {
@@ -23,13 +17,21 @@ func Search(q string) *FoldersResults {
 	}
 }
 
-func searchFolders(q string) []*FoldersResult {
+func searchFolders(q string) []string {
+	r := make([]string, 0)
+	if q == "" {
+		abs, err := filepath.Abs(".")
+		if err != nil {
+			return make([]string, 0)
+		}
+		r = append(r, abs)
+		return r
+	}
 	matches, err := filepath.Glob(q + "*")
 	if err != nil {
-		return make([]*FoldersResult, 0)
+		return make([]string, 0)
 	}
 
-	r := make([]*FoldersResult, 0)
 	for _, p := range matches {
 		f, err := os.Stat(p)
 		if err != nil {
@@ -40,10 +42,7 @@ func searchFolders(q string) []*FoldersResult {
 			if err != nil {
 				continue
 			}
-			r = append(r, &FoldersResult{
-				ID:   abs,
-				Text: abs,
-			})
+			r = append(r, abs)
 		}
 	}
 	return r

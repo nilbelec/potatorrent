@@ -253,13 +253,15 @@ $(function () {
         $('#schedule-search-modal').modal('show');
     })
 
-    $('#schedule-add-folder').select2({
-        dropdownParent: $("#schedule-search-modal"),
-        placeholder: 'Ruta del directorio',
-        ajax: {
-            url: '/folder',
-            dataType: 'json',
-            delay: 100
+    $.getJSON('/folder', { q: "" }, function(data){ 
+        if (data && data.results && data.results.length) 
+            $('#schedule-add-folder').val(data.results[0]); 
+    });
+    new autoComplete({
+        selector: 'input[id="schedule-add-folder"]',
+        minChars: 1,
+        source: function(term, response){
+            $.getJSON('/folder', { q: term }, function(data){ response(data.results); });
         }
     });
 
