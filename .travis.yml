@@ -13,7 +13,7 @@ script:
 - diff -u <(echo -n) <(gofmt -d .)
 - go vet $(go list ./... | grep -v /vendor/)
 - go test -v -race ./...
-- gox -osarch="linux/arm linux/amd64 windows/amd64 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}"
+- gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}"
   -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
 deploy:
   provider: releases
@@ -22,6 +22,7 @@ deploy:
     secure: L2Z+a2mAbHANeZa2U7IkhnSsa3f/KygPwwTjYym2+vrXiaTqdaJJ+2FuBVa3JoZ32CH2lwctPK+WtqDNRQHBKgaY+WYTQz2/I1gChRKXmhOy4zazeWK6qbIw88n4K1B/9IUA6Efz44AhpPDapXh+YpROZhzgDi3Fdl7bUuPYJ/6ghlnLjBsPDS9+rtOJW+ssbXzkrE24oqbabgG7QlE01NjDcpQ/268zU5Tn682bRHOKbcnIp9lhrdinvKnQXdhZA/2kVjSn66VSSsWRtE6Xp//d+8TPIZGWo1JiIWL8RiU07jPhjvytlDZUgTT7LKamq5Cq6eHK11J67TWUd7i1MX3XgzTNFKn2AlbWJY1zA+xfokpVpCZNjNy4dp/65BBVHQzSrIhqGTbz5h6whxydcRoxWSXnMLn7ToFAE3IZ9hHG9+p193/MenrvS/kGw2My6iymXypqAGr2N252mgkDw7j9rNi9kaiDYWgE/0dmQVAGLOcWarwt5DWCRukQKzBHq3NlaX12xBHyPb/rCWJUn3oqBRVvIv73P7Zn2QVyhFP6vtquO33uI1jgwuua+X2I/6C2XDDRE5Pxz5REq3rRYhBaMn82hQMXvwoqXpH6dTyo4WMqK0l0Ms/RHDvVcy4xRC+y3F//9ODEuHAc/XsoTbFmA6Pv/AFfsNOyv2taj1g=
   file: 
   - potatorrent.windows.amd64.exe
+  - potatorrent.windows.386.exe
   - potatorrent.darwin.amd64
   - potatorrent.linux.amd64
   - potatorrent.linux.arm
