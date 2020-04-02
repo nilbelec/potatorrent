@@ -239,6 +239,7 @@ $(function () {
                     document.execCommand('copy');
                     document.body.removeChild(el);
                 };
+                
             }
             lazyload();
         }).fail(function(){
