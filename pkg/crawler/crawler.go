@@ -136,7 +136,7 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 
 func (c *Crawler) Download(id string, date string, path string) (*SearchTorrentResult, error) {
 	url := baseURL + "/" + path
-	result, err := findTorrent(id, url)
+	result, err := findTorrent(id, url, false)
 	if err == nil {
 		return result, nil
 	}
@@ -159,7 +159,7 @@ func trySearchTorrent(id string, date string, url string) (*SearchTorrentResult,
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
 			dp := extractLiDownloadPage(li)
-			bytes, err := findTorrent(id, dp)
+			bytes, err := findTorrent(id, dp, true)
 			if err == nil {
 				return bytes, nil
 			}
@@ -174,13 +174,17 @@ func extractLiDownloadPage(li *html.Node) string {
 	return href
 }
 
-func findTorrent(id string, url string) (*SearchTorrentResult, error) {
+func findTorrent(id string, url string, strict bool) (*SearchTorrentResult, error) {
 	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
 	}
-	re := regexp.MustCompile("\".+descargar-torrent\\/" + id + ".+\"")
+	rex := "\".+descargar-torrent\\/.+\""
+	if strict {
+		rex = "\".+descargar-torrent\\/" + id + ".+\""
+	}
+	re := regexp.MustCompile(rex)
 	match := re.FindStringSubmatch(text)
 	if len(match) == 0 {
 		return nil, errors.New("Unable to find the download link")
