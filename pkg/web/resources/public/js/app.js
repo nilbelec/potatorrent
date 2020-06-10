@@ -24,7 +24,7 @@ $(function () {
                 }
             });
     }
-    
+
 
     $('#schedules').tooltip();
     $('#github-link').tooltip();
@@ -160,7 +160,7 @@ $(function () {
                     doSearch();
                 })
             }
-            
+
             for (let k in response.data.torrents["0"]) {
                 const t = response.data.torrents["0"][k];
 
@@ -239,13 +239,12 @@ $(function () {
                     document.execCommand('copy');
                     document.body.removeChild(el);
                 };
-                
             }
             lazyload();
-        }).fail(function(){
+        }).fail(function () {
             $('#search-results-container').empty()
             $.error("Ups! Se ha producido un error...");
-        }).always(function (){
+        }).always(function () {
             $('#search').prop('disabled', false);
         })
     }
@@ -254,15 +253,15 @@ $(function () {
         $('#schedule-search-modal').modal('show');
     })
 
-    $.getJSON('/folder', { q: "" }, function(data){ 
-        if (data && data.results && data.results.length) 
-            $('#schedule-add-folder').val(data.results[0]); 
+    $.getJSON('/folder', { q: "" }, function (data) {
+        if (data && data.results && data.results.length)
+            $('#schedule-add-folder').val(data.results[0]);
     });
     new autoComplete({
         selector: 'input[id="schedule-add-folder"]',
         minChars: 1,
-        source: function(term, response){
-            $.getJSON('/folder', { q: term }, function(data){ response(data.results); });
+        source: function (term, response) {
+            $.getJSON('/folder', { q: term }, function (data) { response(data.results); });
         }
     });
 
@@ -341,11 +340,11 @@ $(function () {
         refreshSchedules(true);
     });
 
-    $('#schedules-modal').on('show.bs.modal', function(){
+    $('#schedules-modal').on('show.bs.modal', function () {
         refreshSchedules(true);
     })
 
-    $('#schedules-modal').on('hidden.bs.modal', function(){
+    $('#schedules-modal').on('hidden.bs.modal', function () {
         to = setTimeout(refreshSchedules, schedulesRefreshTime);
     })
 
@@ -405,8 +404,8 @@ $(function () {
                 } else {
                     $cont.find('.schedule-img').attr('data-src', '/image?path=' + s.lastTorrentImage)
                 }
-                
-                
+
+
                 if (s.lastTorrentName) {
                     $cont.find('.schedule-last-torrent').text(s.lastTorrentName);
                     $cont.find('.schedule-last-torrent-date').text(s.lastTorrentDate);
@@ -488,10 +487,10 @@ $(function () {
     }
     refreshSchedules();
 
-    $('#schedules-filter').on('keyup', function(){
+    $('#schedules-filter').on('keyup', function () {
         filterSchedules();
     })
-    function filterSchedules(){
+    function filterSchedules() {
         $('#schedules-modal .schedule').show();
         const filter = $('#schedules-filter').val().trim();
         if (!filter)
