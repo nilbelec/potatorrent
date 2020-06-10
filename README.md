@@ -32,5 +32,5 @@ Potatorrent is developed using [go](https://golang.org/). To build it just clone
 ```bash
 $ cd cmd/potatorrent
 $ go get
-$ go built
+$ go build
 ```
