@@ -23,7 +23,7 @@ func NewCrawler() *Crawler {
 }
 
 const protocol = "https:"
-const baseURLWithoutProtocol = "//" + "pc" + "tne" + "w.org" //"de" + "sca" + "rga" + "s20" + "20" + ".org"
+const baseURLWithoutProtocol = "//" + "pc" + "tmi" + "x.com"
 const baseURL = protocol + baseURLWithoutProtocol
 const searchPageURL = baseURL + "/buscar"
 const searchURL = baseURL + "/get/result/"
