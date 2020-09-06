@@ -17,7 +17,7 @@ type Handler struct {
 
 // NewHandler creates a new resources handler
 func NewHandler() *Handler {
-	b := packr.NewBox(".")
+	b := packr.NewBox("public")
 	return &Handler{b}
 }
 
@@ -30,7 +30,7 @@ func (h *Handler) Routes() router.Routes {
 }
 
 func (h *Handler) getHomePage(w http.ResponseWriter, r *http.Request) {
-	b, err := h.b.Find("home.html")
+	b, err := h.b.Find("index.html")
 	if err != nil {
 		http.NotFound(w, r)
 		return

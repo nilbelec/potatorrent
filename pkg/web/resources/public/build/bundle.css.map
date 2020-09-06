@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../../../../../front/Svg.svelte",
+    "../../../../../front/Navbar.svelte"
+  ],
+  "sourcesContent": [
+    "<svg version=\"1.1\" class=\"fa-icon {className}\"\n  class:fa-spin={spin} class:fa-pulse={pulse} class:fa-inverse={inverse}\n  class:fa-flip-horizontal=\"{flip === 'horizontal'}\" class:fa-flip-vertical=\"{flip === 'vertical'}\"\n  {x} {y} {width} {height}\n  aria-label={label}\n  role=\"{ label ? 'img' : 'presentation' }\"\n  viewBox={box} style={style}\n  >\n  <slot></slot>\n</svg>\n\n<style>\n.fa-icon {\n  display: inline-block;\n  fill: currentColor;\n}\n.fa-flip-horizontal {\n  transform: scale(-1, 1);\n}\n.fa-flip-vertical {\n  transform: scale(1, -1);\n}\n.fa-spin {\n  animation: fa-spin 1s 0s infinite linear;\n}\n.fa-inverse {\n  color: #fff;\n}\n.fa-pulse {\n  animation: fa-spin 1s infinite steps(8);\n}\n@keyframes fa-spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n</style>\n\n<script>\n  let className;\n\n  export { className as class };\n\n  export let width;\n  export let height;\n  export let box;\n\n  export let spin = false;\n  export let inverse = false;\n  export let pulse = false;\n  export let flip = null;\n\n  // optionals\n  export let x = undefined;\n  export let y = undefined;\n  export let style = undefined;\n  export let label = undefined;\n</script>\n",
+    "<script>\n  import Icon from \"svelte-awesome\";\n  import { clockO } from \"svelte-awesome/icons\";\n</script>\n\n<style>\n  nav {\n    box-shadow: 0px 2px 5px #000;\n    color: #f8f9fa;\n    padding: 0.5rem;\n    background-color: #343a40;\n  }\n</style>\n\n<nav>\n  <Icon data={clockO} />\n</nav>\n"
+  ],
+  "names": [],
+  "mappings": "AAYA,QAAQ,eAAC,CAAC,AACR,OAAO,CAAE,YAAY,CACrB,IAAI,CAAE,YAAY,AACpB,CAAC,AACD,mBAAmB,eAAC,CAAC,AACnB,SAAS,CAAE,MAAM,EAAE,CAAC,CAAC,CAAC,CAAC,AACzB,CAAC,AACD,iBAAiB,eAAC,CAAC,AACjB,SAAS,CAAE,MAAM,CAAC,CAAC,CAAC,EAAE,CAAC,AACzB,CAAC,AACD,QAAQ,eAAC,CAAC,AACR,SAAS,CAAE,sBAAO,CAAC,EAAE,CAAC,EAAE,CAAC,QAAQ,CAAC,MAAM,AAC1C,CAAC,AACD,WAAW,eAAC,CAAC,AACX,KAAK,CAAE,IAAI,AACb,CAAC,AACD,SAAS,eAAC,CAAC,AACT,SAAS,CAAE,sBAAO,CAAC,EAAE,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC,AACzC,CAAC,AACD,WAAW,sBAAQ,CAAC,AAClB,EAAE,AAAC,CAAC,AACF,SAAS,CAAE,OAAO,IAAI,CAAC,AACzB,CAAC,AACD,IAAI,AAAC,CAAC,AACJ,SAAS,CAAE,OAAO,MAAM,CAAC,AAC3B,CAAC,AACH,CAAC;AChCC,GAAG,eAAC,CAAC,AACH,UAAU,CAAE,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,IAAI,CAC5B,KAAK,CAAE,OAAO,CACd,OAAO,CAAE,MAAM,CACf,gBAAgB,CAAE,OAAO,AAC3B,CAAC"
+}
