@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anton&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/JavaScript-autoComplete/1.0.4/auto-complete.min.css">
 
     <link rel="stylesheet" type="text/css" href="/public/css/select2.bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/public/css/animations.css">
@@ -25,7 +26,7 @@
 
 <body>
     <div id="notifications" class="position-fixed" style="z-index:1040;top:10px;right:10px;">
-        <div id ="toast-template-container" hidden>
+        <div id="toast-template-container" hidden>
             <div class="toast fade hide" data-delay="3000">
                 <div class="toast-body">
                     <i class="fa fa-fw"></i>
@@ -45,7 +46,7 @@
             <img height="36px" src="/public/img/logo.png" />
             potatorrent
         </a>
-        <a id="github-link" class="btn p-0 text-light" target="_blank" href="https://github.com/nilbelec/potatorrent/" 
+        <a id="github-link" class="btn p-0 text-light" target="_blank" href="https://github.com/nilbelec/potatorrent/"
             data-toggle="tooltip" title="Visita la página del proyecto en GitHub" data-placement="left">
             <i class="fa fa-2x fa-github"></i>
         </a>
@@ -123,6 +124,11 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
+                                <button class="dropdown-item torrent-download-folder" type="button">
+                                    Descargar en carpeta por defecto
+                                    <i class="fa fa-folder-open fa-fw" aria-hidden="true"></i>
+                                </button>
+                                <div class="dropdown-divider"></div>
                                 <button class="dropdown-item torrent-download-copy" type="button">
                                     Copiar enlace al portapapeles
                                     <i class="fa fa-copy fa-fw" aria-hidden="true"></i>
@@ -285,7 +291,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title w-auto">Búsquedas programadas</h5>
-                    <input id="schedules-filter" type="text" class="form-control form-control-sm w-auto ml-4" placeholder="Filtrar...">
+                    <input id="schedules-filter" type="text" class="form-control form-control-sm w-auto ml-4"
+                        placeholder="Filtrar...">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

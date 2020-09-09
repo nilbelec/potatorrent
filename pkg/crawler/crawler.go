@@ -55,7 +55,7 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 	return &r, err
 }
 
-func (c *Crawler) Download(id string, date string, path string) (*SearchTorrentResult, error) {
+func (c *Crawler) SearchTorrentInfo(id string, date string, path string) (*TorrentInfo, error) {
 	url := baseURL + "/" + path
 	result, err := findTorrent(id, url, false)
 	if err == nil {
@@ -64,7 +64,7 @@ func (c *Crawler) Download(id string, date string, path string) (*SearchTorrentR
 	return trySearchTorrent(id, date, url)
 }
 
-func trySearchTorrent(id string, date string, url string) (*SearchTorrentResult, error) {
+func trySearchTorrent(id string, date string, url string) (*TorrentInfo, error) {
 	pg := 1
 	for {
 		u := fmt.Sprint(url, "/pg/", pg)
@@ -75,7 +75,7 @@ func trySearchTorrent(id string, date string, url string) (*SearchTorrentResult,
 		}
 		any := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li")
 		if len(any) == 0 {
-			return &SearchTorrentResult{}, nil
+			return &TorrentInfo{}, nil
 		}
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
@@ -95,7 +95,7 @@ func extractLiDownloadPage(li *html.Node) string {
 	return href
 }
 
-func findTorrent(id string, url string, strict bool) (*SearchTorrentResult, error) {
+func findTorrent(id string, url string, strict bool) (*TorrentInfo, error) {
 	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
@@ -110,11 +110,11 @@ func findTorrent(id string, url string, strict bool) (*SearchTorrentResult, erro
 	if len(match) == 0 {
 		return nil, errors.New("Unable to find the download link")
 	}
-	r := &SearchTorrentResult{
-		Url:      protocol + strings.Trim(match[0], "\""),
+	r := &TorrentInfo{
+		URL:      protocol + strings.Trim(match[0], "\""),
 		Password: findPassword(url),
 	}
-	log.Println("Found torrent file for " + id + ": " + r.Url)
+	log.Println("Found torrent file for " + id + ": " + r.URL)
 	return r, nil
 }
 

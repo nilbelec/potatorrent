@@ -32,8 +32,8 @@ type SearchOptions struct {
 	Inon      map[string]string `json:"inon"`
 }
 
-type SearchTorrentResult struct {
-	Url      string `json:"url"`
+type TorrentInfo struct {
+	URL      string `json:"url"`
 	Password string `json:"password"`
 }
 

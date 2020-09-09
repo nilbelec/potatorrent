@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/nilbelec/potatorrent/pkg/crawler"
+	"github.com/nilbelec/potatorrent/pkg/downloader"
+	"github.com/nilbelec/potatorrent/pkg/folders"
 	"github.com/nilbelec/potatorrent/pkg/github"
 	"github.com/nilbelec/potatorrent/pkg/scheduler"
 	"github.com/nilbelec/potatorrent/pkg/web/download"
@@ -19,14 +21,16 @@ import (
 
 // Server web server
 type Server struct {
-	crawler   *crawler.Crawler
-	github    *github.Client
-	scheduler *scheduler.Scheduler
+	crawler    *crawler.Crawler
+	github     *github.Client
+	scheduler  *scheduler.Scheduler
+	folders    *folders.Folders
+	downloader *downloader.Downloader
 }
 
 // NewServer creates a new web server
-func NewServer(c *crawler.Crawler, g *github.Client, s *scheduler.Scheduler) *Server {
-	return &Server{c, g, s}
+func NewServer(c *crawler.Crawler, g *github.Client, s *scheduler.Scheduler, f *folders.Folders, d *downloader.Downloader) *Server {
+	return &Server{c, g, s, f, d}
 }
 
 // Start starts the web server
@@ -39,10 +43,10 @@ func (s *Server) router() *router.Router {
 	r := router.New()
 	r.AddHandler(search.NewHandler(s.crawler))
 	r.AddHandler(image.NewHandler(s.crawler))
-	r.AddHandler(download.NewHandler(s.crawler))
+	r.AddHandler(download.NewHandler(s.crawler, s.downloader))
 	r.AddHandler(version.NewHandler(s.github))
 	r.AddHandler(schedule.NewHandler(s.scheduler))
-	r.AddHandler(folder.NewHandler())
+	r.AddHandler(folder.NewHandler(s.folders))
 
 	r.AddHandler(resources.NewHandler())
 	return r
