@@ -3,6 +3,8 @@ package folders
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/nilbelec/potatorrent/pkg/config"
 )
 
 // FoldersResults is folder search results
@@ -10,21 +12,25 @@ type FoldersResults struct {
 	Results []string `json:"results"`
 }
 
-func Search(q string) *FoldersResults {
-	r := searchFolders(q)
+type Folders struct {
+	c *config.ConfigFile
+}
+
+func NewFolders(c *config.ConfigFile) *Folders {
+	return &Folders{c}
+}
+
+func (f *Folders) Search(q string) *FoldersResults {
+	r := f.searchFolders(q)
 	return &FoldersResults{
 		Results: r,
 	}
 }
 
-func searchFolders(q string) []string {
+func (f *Folders) searchFolders(q string) []string {
 	r := make([]string, 0)
 	if q == "" {
-		abs, err := filepath.Abs(".")
-		if err != nil {
-			return make([]string, 0)
-		}
-		r = append(r, abs)
+		r = append(r, f.c.DownloadFolder())
 		return r
 	}
 	matches, err := filepath.Glob(q + "*")

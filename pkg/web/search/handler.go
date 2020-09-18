@@ -21,9 +21,9 @@ func NewHandler(c *crawler.Crawler) *Handler {
 // Routes return the routes the search handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/search", Method: "GET", Accepts: "application/json", HandlerFunc: h.searchTorrents},
-		router.Route{Path: "/options", Method: "GET", Accepts: "application/json", HandlerFunc: h.searchOptions},
-		router.Route{Path: "/subcategories", Method: "GET", Accepts: "application/json", HandlerFunc: h.searchSubcategories},
+		router.Route{Path: "/search", Method: "GET", HandlerFunc: h.searchTorrents},
+		router.Route{Path: "/options", Method: "GET", HandlerFunc: h.searchOptions},
+		router.Route{Path: "/subcategories", Method: "GET", HandlerFunc: h.searchSubcategories},
 	}
 }
 

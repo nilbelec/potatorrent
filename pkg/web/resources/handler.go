@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/gobuffalo/packr"
 	"github.com/nilbelec/potatorrent/pkg/web/router"
@@ -40,7 +41,7 @@ func (h *Handler) getHomePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getResource(w http.ResponseWriter, r *http.Request) {
-	b, err := h.b.Find(r.URL.Path)
+	b, err := h.b.Find(strings.Replace(r.URL.Path, "/public", "", 1))
 	if err != nil {
 		http.NotFound(w, r)
 		return

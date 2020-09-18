@@ -4,16 +4,14 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	random "math/rand"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/nilbelec/potatorrent/pkg/config"
 	"github.com/nilbelec/potatorrent/pkg/crawler"
-	"github.com/nilbelec/potatorrent/pkg/util"
+	"github.com/nilbelec/potatorrent/pkg/downloader"
 )
 
 type ScheduleSearch struct {
@@ -54,13 +52,15 @@ func (ss *ScheduleSearch) String() string {
 
 // Scheduler is an Torrent scheduler
 type Scheduler struct {
-	c *crawler.Crawler
-	f *SchedulesFile
+	c   *crawler.Crawler
+	f   *SchedulesFile
+	cfg *config.ConfigFile
+	d   *downloader.Downloader
 }
 
 // NewScheduler creates a new torrent scheduler
-func NewScheduler(c *crawler.Crawler, f *SchedulesFile) *Scheduler {
-	s := &Scheduler{c: c, f: f}
+func NewScheduler(c *crawler.Crawler, f *SchedulesFile, cfg *config.ConfigFile, d *downloader.Downloader) *Scheduler {
+	s := &Scheduler{c, f, cfg, d}
 	go s.runAll()
 	return s
 }
@@ -124,91 +124,71 @@ func (s *Scheduler) save(ss *ScheduleSearch) error {
 }
 
 func (s *Scheduler) run(id string) {
-	for {
-		ss := s.f.Get(id)
-		if ss == nil {
-			break
-		}
-		if ss.Disabled {
-			time.Sleep(time.Duration(ss.Interval) * time.Minute)
-			continue
-		}
-		log.Printf("[%s] - Running\n", ss)
-		r, err := s.c.Search(ss.Params, "1")
-		if err != nil {
-			ss.Error = err.Error()
-			log.Printf("[%s] - Error on Search: %v\n", ss, ss.Error)
-			ss.LastExecution = time.Now()
-			s.f.Save(ss)
-			time.Sleep(time.Duration(ss.Interval) * time.Minute)
-			continue
-		}
-		ss.Error = ""
-		ts := r.Data.GetTorrents()
-		for _, t := range ts {
-			if ss.LastTorrentID == "NONE" || t.TorrentID == ss.LastTorrentID {
-				ss.LastTorrentID = ""
-				log.Printf("[%s] - No new torrents found\n", ss)
-				break
-			}
-			log.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
-			s.downloadTorrent(t, ss)
-		}
-		if len(ts) > 0 {
-			ss.LastTorrentID = ts[0].TorrentID
-			ss.LastTorrentName = ts[0].TorrentName
-			ss.LastTorrentImage = ts[0].Imagen
-			ss.LastTorrentDate = ts[0].TorrentDateAdded
-		}
+	ss := s.f.Get(id)
+	if ss == nil || ss.Disabled {
+		return
+	}
+	now := time.Now()
+	next := ss.LastExecution.Add(time.Duration(ss.Interval) * time.Minute)
+	if next.After(now) {
+		return
+	}
+	log.Printf("[%s] - Running\n", ss)
+	r, err := s.c.Search(ss.Params, "1")
+	if err != nil {
+		ss.Error = err.Error()
+		log.Printf("[%s] - Error on Search: %v\n", ss, ss.Error)
 		ss.LastExecution = time.Now()
 		s.f.Save(ss)
-		log.Printf("[%s] - Done for now\n", ss)
-		time.Sleep(time.Duration(ss.Interval) * time.Minute)
+		return
 	}
+	ss.Error = ""
+	ts := r.Data.GetTorrents()
+	for _, t := range ts {
+		if ss.LastTorrentID == "NONE" || t.TorrentID == ss.LastTorrentID {
+			ss.LastTorrentID = ""
+			log.Printf("[%s] - No new torrents found\n", ss)
+			break
+		}
+		log.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
+		s.downloadTorrent(t, ss)
+	}
+	if len(ts) > 0 {
+		ss.LastTorrentID = ts[0].TorrentID
+		ss.LastTorrentName = ts[0].TorrentName
+		ss.LastTorrentImage = ts[0].Imagen
+		ss.LastTorrentDate = ts[0].TorrentDateAdded
+	}
+	ss.LastExecution = time.Now()
+	s.f.Save(ss)
+	log.Printf("[%s] - Done for now\n", ss)
+	time.Sleep(time.Duration(ss.Interval) * time.Minute)
 }
 
 func (s *Scheduler) downloadTorrent(t *crawler.Torrent, ss *ScheduleSearch) error {
-	result, err := s.c.Download(t.TorrentID, t.TorrentDateAdded, t.GUID)
+	result, err := s.c.SearchTorrentInfo(t.TorrentID, t.TorrentDateAdded, t.GUID)
 	if err != nil {
 		return err
 	}
-	if result == nil || result.Url == "" {
+	if result == nil || result.URL == "" {
 		return errors.New("No se ha encontrado la URL del torrent")
 	}
 	ss.LastTorrentPassword = result.Password
-	client := util.NewHTTPClient()
-	resp, err := client.Get(result.Url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	out, err := os.Create(ss.Folder + "/" + t.TorrentID + ".torrent")
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-	if result.Password != "" {
-		return ioutil.WriteFile(ss.Folder+"/"+t.TorrentID+".password.txt", []byte(result.Password), 0644)
-	}
+	s.d.DownloadOn(t.TorrentID, result, ss.Folder)
 	return nil
 }
 
 func (s *Scheduler) runAll() error {
-	ids, err := s.f.GetAllIDs()
-	if err != nil {
-		return err
+	for {
+		ids, err := s.f.GetAllIDs()
+		if err != nil {
+			return err
+		}
+		for _, id := range ids {
+			s.run(id)
+		}
+		time.Sleep(time.Duration(10 * time.Second))
 	}
-	for _, id := range ids {
-		go s.run(id)
-		time.Sleep(time.Duration(random.Intn(5)+5) * time.Second)
-	}
-	return nil
 }
 
 func randomUUID() (string, error) {

@@ -176,11 +176,12 @@ $(function () {
 
                 $cont.find('.has-tooltip').tooltip()
 
-                $cont.find('.torrent-download, .torrent-download-copy, .torrent-download-password').on('click', function (e) {
+                $cont.find('.torrent-download, .torrent-download-copy, .torrent-download-folder, .torrent-download-password').on('click', function (e) {
                     e.stopPropagation()
                     const $btn = $(this);
                     const $group = $btn.closest('.download-group');
-                    if ($group.data('download-data')) {
+                    const folder = $btn.hasClass('torrent-download-folder');
+                    if (!folder && $group.data('download-data')) {
                         processDownloadData($btn);
                         return;
                     }
@@ -192,9 +193,9 @@ $(function () {
                     const guid = $group.data('guid');
                     const date = $group.data('date');
 
-                    $.getJSON('/download', { id: id, guid: guid, date: date })
-                        .done(function (response) {
-                            $group.data('download-data', response);
+                    $.getJSON('/download', { id: id, guid: guid, date: date, folder: folder })
+                        .done(function (res) {
+                            $group.data('download-data', res);
                             processDownloadData($btn);
                         }).always(function () {
                             $btn.prop('disabled', false);
@@ -215,6 +216,8 @@ $(function () {
                             $('#password').text(data.password);
                             $('#password-modal').modal('show');
                         }
+                    } else if ($btn.hasClass('torrent-download-folder')) {
+                        $.success('Torrent descargado en carpeta por defecto :)');
                     } else if ($btn.hasClass('torrent-download-copy')) {
                         copyToClipboard(data.url)
                         $.success('Enlace copiado al portapapeles :)');

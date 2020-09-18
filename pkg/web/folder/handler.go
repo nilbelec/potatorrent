@@ -10,11 +10,12 @@ import (
 
 // Handler handles the folder requests
 type Handler struct {
+	f *folders.Folders
 }
 
 // NewHandler creates a new folder handler
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(f *folders.Folders) *Handler {
+	return &Handler{f: f}
 }
 
 // Routes return the routes the schedule handler handles
@@ -26,7 +27,7 @@ func (h *Handler) Routes() router.Routes {
 
 func (h *Handler) searchFolder(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
-	results := folders.Search(q)
+	results := h.f.Search(q)
 	response, err := json.Marshal(results)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
