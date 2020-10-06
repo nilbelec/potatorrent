@@ -4,7 +4,8 @@
     searchOptions,
     searchSubCategories,
     searchTorrents
-  } from "../api.js";
+  } from "../../api.js";
+  import { onMount } from "svelte";
 
   export let searchParams = {
     category: undefined,
@@ -13,15 +14,19 @@
     text: ""
   };
   export let handleSubmit;
+  export let disabled = false;
 
   let categories = [];
   let subCategories = [];
   let qualities = [];
 
-  searchOptions().then(opts => {
-    categories = opts.categories;
-    qualities = opts.qualities;
-  });
+  const load = async () => {
+    try {
+      const opts = await searchOptions();
+      categories = opts.categories;
+      qualities = opts.qualities;
+    } catch {}
+  };
 
   function onSelectCategory(e) {
     searchParams.subCategory = undefined;
@@ -30,6 +35,7 @@
       subCategories = subs;
     });
   }
+  onMount(load);
 </script>
 
 <style>
@@ -43,36 +49,11 @@
   input {
     grid-column-start: 1;
     grid-column-end: 4;
-    color: #3f4f5f;
-    height: 42px;
-    line-height: 42px;
-    width: 100%;
-    background: transparent;
-    font-size: 14px;
-    letter-spacing: -0.08px;
-    border: 1px solid #d8dbdf;
-    border-radius: 3px;
-    box-sizing: border-box;
-    padding: 0 16px;
-    outline: none;
-  }
-  input::placeholder {
-    color: #78848f;
-  }
-  input:focus {
-    border-color: #006fe8;
-    outline: none;
-  }
-  input:hover {
-    border-color: #b2b8bf;
   }
   button {
     grid-column-start: 1;
     grid-column-end: 4;
-    margin: 0;
     height: 42px;
-    background-color: white;
-    border: 1px solid #d8dbdf;
   }
 </style>
 
@@ -82,21 +63,22 @@
     bind:selectedValue={searchParams.category}
     on:select={onSelectCategory}
     on:clear={() => (searchParams.subCategory = undefined)}
-    isDisabled={categories.length == 0}
+    isDisabled={disabled || categories.length == 0}
     placeholder="Filtrar por categoría" />
   <Select
     items={subCategories}
     bind:selectedValue={searchParams.subCategory}
-    isDisabled={searchParams.category == undefined || subCategories.length == 0}
+    isDisabled={disabled || searchParams.category == undefined || subCategories.length == 0}
     placeholder="Filtrar por subcategoría" />
   <Select
     items={qualities}
     bind:selectedValue={searchParams.quality}
-    isDisabled={qualities.length == 0}
+    isDisabled={disabled || qualities.length == 0}
     placeholder="Filtrar por calidad o tipo" />
   <input
+    {disabled}
     bind:value={searchParams.text}
     type="search"
     placeholder="Filtrar por palabras" />
-  <button type="submit">Buscar</button>
+  <button {disabled} type="submit">Buscar</button>
 </form>

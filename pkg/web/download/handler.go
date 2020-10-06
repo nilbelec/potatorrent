@@ -23,7 +23,7 @@ func NewHandler(c *crawler.Crawler, dw *downloader.Downloader) *Handler {
 // Routes return the routes the download handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/download", Method: "GET", Accepts: "application/json", HandlerFunc: h.downloadTorrent},
+		router.Route{Path: "/api/download", Method: "GET", HandlerFunc: h.downloadTorrent},
 	}
 }
 

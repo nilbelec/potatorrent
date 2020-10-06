@@ -2,26 +2,35 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
 )
 
-const baseURLOptionsKey = "baseURL"
 const baseURLDefault = "https:" + "//" + "pc" + "tmi" + "x.com"
-const downloadFolderOptionsKey = "downloadFolder"
-const portOptionsKey = "port"
-const portDefault = "8080"
+const intervalInMinutesDefault = 60
+const portDefault = 8080
+
+type Configuration struct {
+	BaseURL           string `json:"baseURL"`
+	IntervalInMinutes int    `json:"intervalInMinutes"`
+	DownloadFolder    string `json:"downloadFolder"`
+	Port              int    `json:"port"`
+}
 
 type ConfigFile struct {
 	sync.Mutex
-	filename string
-	options  map[string]string
+	filename      string
+	configuration *Configuration
 }
 
 func NewConfigFile(filename string) *ConfigFile {
-	c := &ConfigFile{filename: filename, options: defaults()}
+	c := &ConfigFile{filename: filename, configuration: defaults()}
 	e, err := c.exists()
 	if err != nil {
 		panic(err)
@@ -33,34 +42,62 @@ func NewConfigFile(filename string) *ConfigFile {
 	return c
 }
 
-func defaults() map[string]string {
-	opts := make(map[string]string)
-	opts[baseURLOptionsKey] = baseURLDefault
-	opts[downloadFolderOptionsKey], _ = filepath.Abs(".")
-	opts[portOptionsKey] = portDefault
-	return opts
+func defaults() *Configuration {
+	path, _ := filepath.Abs(".")
+	return &Configuration{
+		BaseURL:           baseURLDefault,
+		DownloadFolder:    path,
+		Port:              portDefault,
+		IntervalInMinutes: intervalInMinutesDefault,
+	}
+}
+
+func (c *ConfigFile) GetConfiguration() *Configuration {
+	c.load()
+	return c.configuration
+}
+
+func (c *ConfigFile) SaveConfiguration(cfg *Configuration) error {
+	err := c.validate(cfg)
+	if err != nil {
+		return err
+	}
+	c.configuration = cfg
+	return c.persist()
+}
+
+func (c *ConfigFile) validate(cfg *Configuration) error {
+	cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
+	_, err := url.Parse(cfg.BaseURL)
+	if err != nil {
+		return errors.New("La URL no ex válida")
+	}
+	return nil
+	cfg.DownloadFolder = strings.TrimSuffix(cfg.DownloadFolder, "/")
+	if _, err := os.Stat(cfg.DownloadFolder); os.IsNotExist(err) {
+		return errors.New("El directorio introducido no existe")
+	}
+	return nil
 }
 
 func (c *ConfigFile) BaseURL() string {
-	if val, ok := c.options[baseURLOptionsKey]; ok {
-		return val
-	}
-	return baseURLDefault
+	c.load()
+	return c.configuration.BaseURL
+}
+
+func (c *ConfigFile) IntervalInMinutes() int {
+	c.load()
+	return c.configuration.IntervalInMinutes
 }
 
 func (c *ConfigFile) DownloadFolder() string {
-	if val, ok := c.options[downloadFolderOptionsKey]; ok {
-		return val
-	}
-	path, _ := filepath.Abs(".")
-	return path
+	c.load()
+	return c.configuration.DownloadFolder
 }
 
 func (c *ConfigFile) Port() string {
-	if val, ok := c.options[portOptionsKey]; ok {
-		return val
-	}
-	return portDefault
+	c.load()
+	return strconv.Itoa(c.configuration.Port)
 }
 
 func (c *ConfigFile) exists() (bool, error) {
@@ -72,7 +109,7 @@ func (c *ConfigFile) exists() (bool, error) {
 }
 
 func (c *ConfigFile) persist() error {
-	b, err := json.MarshalIndent(&c.options, "", " ")
+	b, err := json.MarshalIndent(&c.configuration, "", " ")
 	if err != nil {
 		return err
 	}
@@ -84,5 +121,5 @@ func (c *ConfigFile) load() error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(b, &c.options)
+	return json.Unmarshal(b, &c.configuration)
 }

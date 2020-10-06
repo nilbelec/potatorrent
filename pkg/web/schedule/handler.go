@@ -21,11 +21,11 @@ func NewHandler(s *scheduler.Scheduler) *Handler {
 // Routes return the routes the schedule handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/schedules", Method: "GET", HandlerFunc: h.getSchedules},
-		router.Route{Path: "/schedule", Method: "POST", HandlerFunc: h.scheduleSearch},
-		router.Route{Path: "/schedule", Method: "DELETE", HandlerFunc: h.deleteSchedule},
-		router.Route{Path: "/schedule/disable", Method: "POST", HandlerFunc: h.disableSchedule},
-		router.Route{Path: "/schedule/enable", Method: "POST", HandlerFunc: h.enableSchedule},
+		router.Route{Path: "/api/schedules", Method: "GET", HandlerFunc: h.getSchedules},
+		router.Route{Path: "/api/schedule", Method: "POST", HandlerFunc: h.scheduleSearch},
+		router.Route{Path: "/api/schedule", Method: "DELETE", HandlerFunc: h.deleteSchedule},
+		router.Route{Path: "/api/schedule/disable", Method: "POST", HandlerFunc: h.disableSchedule},
+		router.Route{Path: "/api/schedule/enable", Method: "POST", HandlerFunc: h.enableSchedule},
 	}
 }
 

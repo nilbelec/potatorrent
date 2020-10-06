@@ -27,8 +27,8 @@ func NewHandler(c *github.Client) *Handler {
 // Routes return the routes the search handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/version", Method: "GET", Accepts: "application/json", HandlerFunc: h.getVersion},
-		router.Route{Path: "/latest", Method: "GET", Accepts: "application/json", HandlerFunc: h.getLatest},
+		router.Route{Path: "/api/version", Method: "GET", HandlerFunc: h.getVersion},
+		router.Route{Path: "/api/latest", Method: "GET", HandlerFunc: h.getLatest},
 	}
 }
 

@@ -9,29 +9,46 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nilbelec/potatorrent/pkg/config"
+
 	"github.com/antchfx/htmlquery"
 	"golang.org/x/net/html"
 )
 
 // Crawler is an Torrent crawler
 type Crawler struct {
+	cfg *config.ConfigFile
 }
 
 // NewCrawler creates a new torrent crawler
-func NewCrawler() *Crawler {
-	return &Crawler{}
+func NewCrawler(cfg *config.ConfigFile) *Crawler {
+	return &Crawler{cfg}
 }
 
-const protocol = "https:"
-const baseURLWithoutProtocol = "//" + "pc" + "tmi" + "x.com"
-const baseURL = protocol + baseURLWithoutProtocol
-const searchPageURL = baseURL + "/buscar"
-const searchURL = baseURL + "/get/result/"
-const subcategoriesURL = baseURL + "/pctn/library/include/ajax/get_subcategory.php"
+const searchPageURLPath = "/buscar"
+const searchURLPath = "/get/result/"
+const subcategoriesURLPath = "/pctn/library/include/ajax/get_subcategory.php"
+
+func (c *Crawler) baseURLScheme() string {
+	s := c.cfg.BaseURL()
+	u, _ := url.Parse(s)
+	return u.Scheme
+}
+func (c *Crawler) searchPageURL() string {
+	return c.cfg.BaseURL() + searchPageURLPath
+}
+
+func (c *Crawler) searchURL() string {
+	return c.cfg.BaseURL() + searchURLPath
+}
+
+func (c *Crawler) subcategoriesURL() string {
+	return c.cfg.BaseURL() + subcategoriesURLPath
+}
 
 // Search returns a search result
 func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, error) {
-	resp, err := postForm(searchURL, url.Values{
+	resp, err := postForm(c.searchURL(), url.Values{
 		"categoryIDR": {params.Categoria},
 		"categoryID":  {params.SubCategoria},
 		"idioma":      {},
@@ -56,8 +73,9 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 }
 
 func (c *Crawler) SearchTorrentInfo(id string, date string, path string) (*TorrentInfo, error) {
-	url := baseURL + "/" + path
-	result, err := findTorrent(id, url, false)
+	url := c.cfg.BaseURL() + "/" + path
+	urlScheme := strings.Split(url, ":")[0]
+	result, err := findTorrent(id, url, false, urlScheme)
 	if err == nil {
 		return result, nil
 	}
@@ -66,6 +84,7 @@ func (c *Crawler) SearchTorrentInfo(id string, date string, path string) (*Torre
 
 func trySearchTorrent(id string, date string, url string) (*TorrentInfo, error) {
 	pg := 1
+	urlScheme := strings.Split(url, ":")[0]
 	for {
 		u := fmt.Sprint(url, "/pg/", pg)
 		log.Println("Searching for torrent " + id + " in " + u)
@@ -80,7 +99,7 @@ func trySearchTorrent(id string, date string, url string) (*TorrentInfo, error) 
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
 			dp := extractLiDownloadPage(li)
-			bytes, err := findTorrent(id, dp, true)
+			bytes, err := findTorrent(id, dp, true, urlScheme)
 			if err == nil {
 				return bytes, nil
 			}
@@ -95,7 +114,7 @@ func extractLiDownloadPage(li *html.Node) string {
 	return href
 }
 
-func findTorrent(id string, url string, strict bool) (*TorrentInfo, error) {
+func findTorrent(id string, url string, strict bool, URLScheme string) (*TorrentInfo, error) {
 	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
@@ -111,7 +130,7 @@ func findTorrent(id string, url string, strict bool) (*TorrentInfo, error) {
 		return nil, errors.New("Unable to find the download link")
 	}
 	r := &TorrentInfo{
-		URL:      protocol + strings.Trim(match[0], "\""),
+		URL:      URLScheme + ":" + strings.Trim(match[0], "\""),
 		Password: findPassword(url),
 	}
 	log.Println("Found torrent file for " + id + ": " + r.URL)
@@ -132,7 +151,7 @@ func findPassword(url string) string {
 }
 
 func (c *Crawler) SearchOptions() (*SearchOptions, error) {
-	doc, err := getAndParse(searchPageURL)
+	doc, err := getAndParse(c.searchPageURL())
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
 	}
@@ -170,14 +189,14 @@ func extractCalidades(doc *html.Node) map[string]string {
 	return optionsToMap(options)
 }
 
-// GetImage returns a image
+// GetImage returns an image
 func (c *Crawler) GetImage(path string) ([]byte, error) {
-	return getBytes(baseURL + path)
+	return getBytes(c.cfg.BaseURL() + path)
 }
 
 // GetSubcategories returns the subcategories
 func (c *Crawler) GetSubcategories(category string) (map[string]string, error) {
-	res, err := postForm(subcategoriesURL, url.Values{"categoryIDR": {category}})
+	res, err := postForm(c.subcategoriesURL(), url.Values{"categoryIDR": {category}})
 	if err != nil {
 		return nil, errors.New("Error while requesting subcategories: " + err.Error())
 	}

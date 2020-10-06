@@ -1,7 +1,11 @@
 <script>
-  import Navbar from "./_components/Navbar.svelte";
-  import Main from "./Main.svelte";
+  import { Router } from "svelte-routing";
+  import Navbar from "./navbar/Navbar.svelte";
+  import Content from "./content/Content.svelte";
+  export let url = "";
 </script>
 
-<Navbar />
-<Main />
+<Router {url}>
+  <Navbar />
+  <Content />
+</Router>

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -22,8 +21,6 @@ type ScheduleSearch struct {
 	LastTorrentDate     string                `json:"lastTorrentDate"`
 	LastTorrentPassword string                `json:"lastTorrentPassword"`
 	LastExecution       time.Time             `json:"lastExecutionTime"`
-	Folder              string                `json:"folder"`
-	Interval            int                   `json:"interval"`
 	Params              *crawler.SearchParams `json:"params"`
 	Error               string                `json:"error"`
 	Disabled            bool                  `json:"disabled"`
@@ -70,16 +67,7 @@ func (s *Scheduler) GetAll() []*ScheduleSearch {
 }
 
 func (s *Scheduler) Add(ss *ScheduleSearch) error {
-	err := s.validate(ss)
-	if err != nil {
-		return err
-	}
-	err = s.save(ss)
-	if err != nil {
-		return err
-	}
-	go s.run(ss.ID)
-	return nil
+	return s.save(ss)
 }
 
 func (s *Scheduler) Delete(id string) error {
@@ -104,14 +92,6 @@ func (s *Scheduler) Enable(id string) error {
 	return s.f.Save(ss)
 }
 
-func (s *Scheduler) validate(ss *ScheduleSearch) error {
-	ss.Folder = strings.TrimSuffix(ss.Folder, "/")
-	if _, err := os.Stat(ss.Folder); os.IsNotExist(err) {
-		return errors.New("El directorio introducido no existe")
-	}
-	return nil
-}
-
 func (s *Scheduler) save(ss *ScheduleSearch) error {
 	id, err := randomUUID()
 	if err != nil {
@@ -129,7 +109,7 @@ func (s *Scheduler) run(id string) {
 		return
 	}
 	now := time.Now()
-	next := ss.LastExecution.Add(time.Duration(ss.Interval) * time.Minute)
+	next := ss.LastExecution.Add(time.Duration(s.cfg.IntervalInMinutes()) * time.Minute)
 	if next.After(now) {
 		return
 	}
@@ -162,7 +142,6 @@ func (s *Scheduler) run(id string) {
 	ss.LastExecution = time.Now()
 	s.f.Save(ss)
 	log.Printf("[%s] - Done for now\n", ss)
-	time.Sleep(time.Duration(ss.Interval) * time.Minute)
 }
 
 func (s *Scheduler) downloadTorrent(t *crawler.Torrent, ss *ScheduleSearch) error {
@@ -174,7 +153,7 @@ func (s *Scheduler) downloadTorrent(t *crawler.Torrent, ss *ScheduleSearch) erro
 		return errors.New("No se ha encontrado la URL del torrent")
 	}
 	ss.LastTorrentPassword = result.Password
-	s.d.DownloadOn(t.TorrentID, result, ss.Folder)
+	s.d.DownloadOn(t.TorrentID, result, s.cfg.DownloadFolder())
 	return nil
 }
 

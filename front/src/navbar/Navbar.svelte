@@ -7,20 +7,16 @@
   header {
     position: fixed;
     width: 100vw;
-    height: 4rem;
+    height: 3.5rem;
     background-color: white;
     z-index: 100;
     box-shadow: 0 -0.4rem 0.9rem 0.2rem rgba(0, 0, 0, 0.5);
-    opacity: 0.9;
+    opacity: 0.95;
     transition: opacity 0.3s;
   }
 
   header:hover {
     opacity: 1;
-  }
-
-  header.scroll {
-    box-shadow: 0 -0.4rem 0.9rem 0.2rem rgba(0, 0, 0, 0.5);
   }
 
   nav {

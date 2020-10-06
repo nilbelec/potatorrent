@@ -21,7 +21,7 @@ func NewHandler(f *folders.Folders) *Handler {
 // Routes return the routes the schedule handler handles
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
-		router.Route{Path: "/folder", Method: "GET", HandlerFunc: h.searchFolder},
+		router.Route{Path: "/api/folder", Method: "GET", HandlerFunc: h.searchFolder},
 	}
 }
 

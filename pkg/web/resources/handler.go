@@ -26,6 +26,9 @@ func NewHandler() *Handler {
 func (h *Handler) Routes() router.Routes {
 	return router.Routes{
 		router.Route{Path: "/", Method: "GET", Accepts: "text/html", HandlerFunc: h.getHomePage},
+		router.Route{Path: "/searches", Method: "GET", Accepts: "text/html", HandlerFunc: h.getHomePage},
+		router.Route{Path: "/configuration", Method: "GET", Accepts: "text/html", HandlerFunc: h.getHomePage},
+		router.Route{Path: "/update", Method: "GET", Accepts: "text/html", HandlerFunc: h.getHomePage},
 		router.Route{Pattern: regexp.MustCompile(`/public/.+`), Method: "GET", HandlerFunc: h.getResource},
 	}
 }

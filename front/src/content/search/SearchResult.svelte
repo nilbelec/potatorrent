@@ -5,14 +5,15 @@
 </script>
 
 <style>
-  div {
+  .results-grid {
     display: grid;
-    grid-gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    grid-gap: 3rem;
+    grid-template-columns: repeat(auto-fit, 172px);
+    justify-content: space-evenly;
   }
 </style>
 
-<div>
+<div class="results-grid">
   {#each torrents as torrent}
     <Torrent {torrent} />
   {/each}
