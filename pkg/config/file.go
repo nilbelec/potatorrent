@@ -72,7 +72,6 @@ func (c *ConfigFile) validate(cfg *Configuration) error {
 	if err != nil {
 		return errors.New("La URL no ex válida")
 	}
-	return nil
 	cfg.DownloadFolder = strings.TrimSuffix(cfg.DownloadFolder, "/")
 	if _, err := os.Stat(cfg.DownloadFolder); os.IsNotExist(err) {
 		return errors.New("El directorio introducido no existe")
