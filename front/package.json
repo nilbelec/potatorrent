@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "sirv-cli": "^1.0.0",
+    "svelte-routing": "^1.4.2",
     "svelte-awesome": "^2.3.0",
     "svelte-infinite-scroll": "^1.4.1",
     "svelte-lazy": "^1.0.5",
