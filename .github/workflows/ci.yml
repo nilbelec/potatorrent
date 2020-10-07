@@ -7,19 +7,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Build Frontend
+      - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+
+      - name: Build Frontend
         run: |
           cd front
           npm install
           npm run build
 
-      - name: Build Backend
+      - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.12.x
+
+      - name: Build Backend
         run: |
           go get github.com/gobuffalo/packr/packr
           packr
