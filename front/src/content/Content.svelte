@@ -13,7 +13,7 @@
 
 <style>
   main {
-    padding: 6rem 6rem 0 6rem;
+    padding: 6rem 6rem 4rem 6rem;
     transition: padding 0.3s;
     width: 100%;
     height: 100%;
