@@ -2,38 +2,38 @@ name: Potatorrent CI
 
 on: push
   
-  jobs:
-  
-    ci:
-      
-      runs-on: ubuntu-latest
+jobs:
 
-      steps:
+  ci:
+    
+    runs-on: ubuntu-latest
 
-        - name: Checkout Code
-        uses: actions/checkout@v2
+    steps:
 
-        - name: Build Frontend
-        uses: actions/setup-node@v1
-        with:
-            node-version: 14.x
-        run: cd front
-        run: npm install
-        run: npm run build
+      - name: Checkout Code
+      uses: actions/checkout@v2
 
-        - name: Build Backend
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.12.x
-        run: go get github.com/gobuffalo/packr/packr
-        run: packr
-        run: go get -t -v ./...
-        run: export GIT_VERSION=`git describe --tags`
-        run: printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
-        run: go vet $(go list ./... | grep -v /vendor/)
-        run: go test -v -race ./...
-        run: go get github.com/mitchellh/gox
-        run: gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" 
-            -output="potatorrent.{{.OS}}.{{.Arch}}" 
-            -ldflags "-X main.Rev=`git rev-parse --short HEAD`" 
-            -verbose ./...
+      - name: Build Frontend
+      uses: actions/setup-node@v1
+      with:
+          node-version: 14.x
+      run: cd front
+      run: npm install
+      run: npm run build
+
+      - name: Build Backend
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.12.x
+      run: go get github.com/gobuffalo/packr/packr
+      run: packr
+      run: go get -t -v ./...
+      run: export GIT_VERSION=`git describe --tags`
+      run: printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
+      run: go vet $(go list ./... | grep -v /vendor/)
+      run: go test -v -race ./...
+      run: go get github.com/mitchellh/gox
+      run: gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" 
+          -output="potatorrent.{{.OS}}.{{.Arch}}" 
+          -ldflags "-X main.Rev=`git rev-parse --short HEAD`" 
+          -verbose ./...
