@@ -11,24 +11,22 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - run: cd front
-      - run: npm install
-      - run: npm run build
+        run: |
+          cd front
+          npm install
+          npm run build
 
       - name: Build Backend
         uses: actions/setup-go@v2
         with:
           go-version: 1.12.x
-      - run: go get github.com/gobuffalo/packr/packr
-      - run: packr
-      - run: go get -t -v ./...
-      - run: export GIT_VERSION=`git describe --tags`
-      - run: printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
-      - run: go vet $(go list ./... | grep -v /vendor/)
-      - run: go test -v -race ./...
-      - run: go get github.com/mitchellh/gox
-      - run:
-          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64"
-          -output="potatorrent.{{.OS}}.{{.Arch}}"
-          -ldflags "-X main.Rev=`git rev-parse --short HEAD`"
-          -verbose ./...
+        run: |
+          go get github.com/gobuffalo/packr/packr
+          packr
+          go get -t -v ./...
+          export GIT_VERSION=`git describe --tags`
+          printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
+          go vet $(go list ./... | grep -v /vendor/)
+          go test -v -race ./...
+          go get github.com/mitchellh/gox
+          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
