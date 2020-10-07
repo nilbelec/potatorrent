@@ -120,9 +120,9 @@ func findTorrent(id string, url string, strict bool, URLScheme string) (*Torrent
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
 	}
-	rex := "\".+descargar-torrent\\/.+\""
+	rex := "\".+/download\\/.+\""
 	if strict {
-		rex = "\".+descargar-torrent\\/" + id + ".+\""
+		rex = "\".+/download\\/" + id + ".+\""
 	}
 	re := regexp.MustCompile(rex)
 	match := re.FindStringSubmatch(text)
