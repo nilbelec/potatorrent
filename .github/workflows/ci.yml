@@ -3,9 +3,16 @@ on: push
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    env:
+      GOPATH: ${{ github.workspace }}
+      GO111MODULE: off
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          path: ./src/github.com/${{ github.repository }}
 
       - name: Setup Node
         uses: actions/setup-node@v1
@@ -14,7 +21,7 @@ jobs:
 
       - name: Build Frontend
         run: |
-          cd front
+          cd ./src/github.com/${{ github.repository }}/front
           npm install
           npm run build
 
@@ -25,6 +32,7 @@ jobs:
 
       - name: Build Backend
         run: |
+          cd ./src/github.com/${{ github.repository }}
           go get github.com/gobuffalo/packr/packr
           packr
           go get -t -v ./...

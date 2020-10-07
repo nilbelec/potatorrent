@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/nilbelec/potatorrent/pkg/config"
-
 	"github.com/nilbelec/potatorrent/pkg/web/router"
 )
 
