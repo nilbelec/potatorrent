@@ -41,4 +41,11 @@ jobs:
           go vet $(go list ./... | grep -v /vendor/)
           go test -v -race ./...
           go get github.com/mitchellh/gox
-          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
+          mkdir artifacts
+          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="artifacts/potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: potatorrent
+          path: ./src/github.com/${{ github.repository }}/artifacts/*
