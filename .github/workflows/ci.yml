@@ -1,11 +1,8 @@
 name: Potatorrent CI
-
 on: push
-
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
