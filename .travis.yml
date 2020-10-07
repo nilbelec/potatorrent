@@ -10,7 +10,8 @@ jobs:
 
     - stage: Build Backend
       language: go
-      go: 1.12.x
+      go: 
+      - 1.12.x
       before_install:
       - go get github.com/gobuffalo/packr/packr
       - packr
@@ -25,7 +26,8 @@ jobs:
 
     - stage: Create App
       language: go
-      go: 1.12.x
+      go: 
+      - 1.12.x
       before_install:
       - go get github.com/mitchellh/gox
       script:
