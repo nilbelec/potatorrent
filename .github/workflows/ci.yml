@@ -65,55 +65,50 @@ jobs:
 
       - name: Upload Linux ARM Release
         if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.linux.arm
+          asset_path: ./src/github.com/${{ github.repository }}/artifacts/potatorrent.linux.arm
           asset_name: potatorrent.linux.arm
 
       - name: Upload Linux AMD64 Release
         if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.linux.amd64
+          asset_path: ./src/github.com/${{ github.repository }}/artifacts/potatorrent.linux.amd64
           asset_name: potatorrent.linux.amd64
 
       - name: Upload Darwin ARM Release
         if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.darwin.amd64
+          asset_path: ./src/github.com/${{ github.repository }}/artifacts/potatorrent.darwin.amd64
           asset_name: potatorrent.darwin.amd64
 
       - name: Upload Windows 386 Release
         if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.windows.386.exe
+          asset_path: ./src/github.com/${{ github.repository }}/artifacts/potatorrent.windows.386.exe
           asset_name: potatorrent.windows.386.exe
 
       - name: Upload Windows AMD64 Release
         if: startsWith(github.ref, 'refs/tags/v')
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.windows.amd64.exe
+          asset_path: ./src/github.com/${{ github.repository }}/artifacts/potatorrent.windows.amd64.exe
           asset_name: potatorrent.windows.amd64.exe
