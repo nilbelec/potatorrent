@@ -36,15 +36,20 @@ jobs:
           go get github.com/gobuffalo/packr/packr
           packr
           go get -t -v ./...
-          export GIT_VERSION=`git describe --tags`
-          printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "$GIT_VERSION" > pkg/version/current.go
+          printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "${{ github.ref }}" > pkg/version/current.go
           go vet $(go list ./... | grep -v /vendor/)
           go test -v -race ./...
+          cat pkg/version/current.go
+
+      - name: Create Artifacts
+        run: |
+          cd ./src/github.com/${{ github.repository }}
           go get github.com/mitchellh/gox
           mkdir artifacts
-          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="artifacts/potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
+          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="artifacts/potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=${{ github.ref }} --short HEAD`" -verbose ./...
 
       - name: Upload artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v2
         with:
           name: potatorrent
