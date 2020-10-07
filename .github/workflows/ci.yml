@@ -9,6 +9,9 @@ jobs:
       GO111MODULE: off
 
     steps:
+      - name: Log version
+        run: echo 'Version is ${{ github.ref }}'
+
       - name: Checkout Code
         uses: actions/checkout@v2
         with:
@@ -36,21 +39,81 @@ jobs:
           go get github.com/gobuffalo/packr/packr
           packr
           go get -t -v ./...
-          printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" "${{ github.ref }}" > pkg/version/current.go
           go vet $(go list ./... | grep -v /vendor/)
           go test -v -race ./...
-          cat pkg/version/current.go
 
       - name: Create Artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd ./src/github.com/${{ github.repository }}
+          printf "package version\n\n// Current gets the current application version\nconst Current = \"%s\"\n" `git describe --tags` > pkg/version/current.go
           go get github.com/mitchellh/gox
           mkdir artifacts
-          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="artifacts/potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=${{ github.ref }} --short HEAD`" -verbose ./...
+          gox -osarch="linux/arm linux/amd64 windows/amd64 windows/386 darwin/amd64" -output="artifacts/potatorrent.{{.OS}}.{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...
 
-      - name: Upload artifacts
+      - name: Create Release
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v2
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: potatorrent
-          path: ./src/github.com/${{ github.repository }}/artifacts/*
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Linux ARM Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.linux.arm
+          asset_name: potatorrent.linux.arm
+
+      - name: Upload Linux AMD64 Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.linux.amd64
+          asset_name: potatorrent.linux.amd64
+
+      - name: Upload Darwin ARM Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.darwin.amd64
+          asset_name: potatorrent.darwin.amd64
+
+      - name: Upload Windows 386 Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.windows.386.exe
+          asset_name: potatorrent.windows.386.exe
+
+      - name: Upload Windows AMD64 Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./src/github.com/${{ github.repository }}/potatorrent.windows.amd64.exe
+          asset_name: potatorrent.windows.amd64.exe
