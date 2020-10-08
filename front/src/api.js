@@ -184,7 +184,7 @@ function extractSeason(torrentName) {
 function extractFirstEpisode(torrentName, season) {
     if (isNaN(season))
         return;
-    var myRegexp = /Cap.(\d+)/g;
+    var myRegexp = /Cap\.\s?(\d+)/g;
     var match = myRegexp.exec(torrentName);
     return match && match[1] && match[1].replace(new RegExp(season), '') && Number(match[1].replace(new RegExp(season), ''));
 }
@@ -192,7 +192,7 @@ function extractFirstEpisode(torrentName, season) {
 function extractLastEpisode(torrentName, season) {
     if (isNaN(season))
         return;
-    var myRegexp = /Cap.\d+_(\d+)/g;
+    var myRegexp = /Cap\.\s?\d+_(\d+)/g;
     var match = myRegexp.exec(torrentName);
     return match && match[1] && match[1].replace(new RegExp(season), '') && Number(match[1].replace(new RegExp(season), ''));
 }

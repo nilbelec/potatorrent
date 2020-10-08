@@ -127,7 +127,15 @@ func findTorrent(id string, url string, strict bool, URLScheme string) (*Torrent
 	re := regexp.MustCompile(rex)
 	match := re.FindStringSubmatch(text)
 	if len(match) == 0 {
-		return nil, errors.New("Unable to find the download link")
+		rex = "\".+/descargar-torrent\\/.+\""
+		if strict {
+			rex = "\".+/descargar-torrent\\/" + id + ".+\""
+		}
+		re = regexp.MustCompile(rex)
+		match = re.FindStringSubmatch(text)
+		if len(match) == 0 {
+			return nil, errors.New("Unable to find the download link")
+		}
 	}
 	r := &TorrentInfo{
 		URL:      URLScheme + ":" + strings.Trim(match[0], "\""),
