@@ -3,23 +3,19 @@
   import Searches from "./searches/Searches.svelte";
   import Configuration from "./configuration/Configuration.svelte";
   import Search from "./search/Search.svelte";
-  import NewVersion from "./update/NewVersion.svelte";
-
-  let wrapper;
-  const duration = 280;
-  let inProps = { y: -1000, duration: duration };
-  let outProps = { duration: duration, y: 1000 };
+  import CheckVersion from "./CheckVersion.svelte";
 </script>
 
 <style>
   main {
-    padding: 6rem 6rem 4rem 6rem;
+    padding: 5rem 6rem 4rem 6rem;
     transition: padding 0.3s;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
   }
   .wrapper {
+    margin-top: 1rem;
     position: relative;
     width: 100%;
     height: 100%;
@@ -33,7 +29,8 @@
 </style>
 
 <main>
-  <div class="wrapper" bind:this={wrapper}>
+  <CheckVersion />
+  <div class="wrapper">
     <AnimatedRoute path="/">
       <Search />
     </AnimatedRoute>
@@ -42,9 +39,6 @@
     </AnimatedRoute>
     <AnimatedRoute path="/configuration">
       <Configuration />
-    </AnimatedRoute>
-    <AnimatedRoute path="/update">
-      <NewVersion />
     </AnimatedRoute>
   </div>
 </main>
