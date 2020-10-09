@@ -64,8 +64,8 @@
   }
 </style>
 
-{#if !close}
-  {#await isNewVersion() then value}
+{#await isNewVersion() then value}
+  {#if value && !close}
     <div class="alert" transition:shrink={{ duration: 600 }}>
       <span class="icon bell">
         <Icon data={bell} scale={1.4} />
@@ -83,5 +83,5 @@
         <Icon data={times} scale={1.4} />
       </span>
     </div>
-  {/await}
-{/if}
+  {/if}
+{/await}
