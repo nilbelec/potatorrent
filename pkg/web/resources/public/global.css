@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 html, body {
 	position: relative;
 	width: 100%;
@@ -8,6 +12,7 @@ body {
 	margin: 0;
 	font-family: 'Lato', sans-serif;
   background-color: #fafafa;
+  font-size: 16px;
 }
 
 button {

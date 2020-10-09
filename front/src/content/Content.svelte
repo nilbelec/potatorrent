@@ -10,15 +10,10 @@
   main {
     padding: 5rem 6rem 4rem 6rem;
     transition: padding 0.3s;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
+    margin-bottom: 4rem;
   }
   .wrapper {
-    margin-top: 1rem;
     position: relative;
-    width: 100%;
-    height: 100%;
   }
   @media only screen and (max-width: 1000px) {
     main {

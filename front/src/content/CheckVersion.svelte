@@ -35,12 +35,13 @@
       transform: scale(1) rotate(0);
     }
   }
+  .container {
+    padding-bottom: 1rem;
+  }
   .alert {
-    padding: 0 1rem;
-    height: 60px;
+    padding: 1rem;
     border: 1px solid rgba(36, 241, 6, 0.46);
     background-color: rgba(7, 149, 66, 0.12156862745098039);
-    box-shadow: 0px 0px 2px #259c08;
     color: #0b9908;
     border-color: #c3e6cb;
     display: flex;
@@ -66,22 +67,24 @@
 
 {#await isNewVersion() then value}
   {#if value && !close}
-    <div class="alert" transition:shrink={{ duration: 600 }}>
-      <span class="icon bell">
-        <Icon data={bell} scale={1.4} />
-      </span>
-      <div>
-        <strong>¡Yuhuuu!</strong>
-        Hay una nueva versión disponible: {value}.
-        <a
-          href="https://github.com/nilbelec/potatorrent/releases"
-          target="_blank">
-          Ir a la página de descargas
-        </a>
+    <div class="container" transition:shrink={{ duration: 600 }}>
+      <div class="alert">
+        <span class="icon bell">
+          <Icon data={bell} scale={1.4} />
+        </span>
+        <div>
+          <strong>¡Buenas noticias!</strong>
+          Hay una nueva versión disponible: {value}.
+          <a
+            href="https://github.com/nilbelec/potatorrent/releases"
+            target="_blank">
+            Ir a la página de descargas
+          </a>
+        </div>
+        <span class="icon close" on:click={() => (close = true)}>
+          <Icon data={times} scale={1.4} />
+        </span>
       </div>
-      <span class="icon close" on:click={() => (close = true)}>
-        <Icon data={times} scale={1.4} />
-      </span>
     </div>
   {/if}
 {/await}

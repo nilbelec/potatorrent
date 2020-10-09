@@ -13,6 +13,7 @@
   .animated {
     position: absolute;
     width: 100%;
+    padding-bottom: 2rem;
   }
 </style>
 
