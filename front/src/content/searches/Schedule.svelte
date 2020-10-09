@@ -70,23 +70,23 @@
   }
   .last-torrent {
     display: flex;
-    padding: 4px;
     height: 148px;
-    margin: 0.5rem 0;
-    border-radius: 12px;
   }
   .last-torrent img {
-    height: 140px;
+    height: 148px;
     border-radius: 8px;
   }
   .last-torrent .info {
     margin-left: 6px;
-    margin-right: auto;
+    font-weight: bolder;
     font-size: 0.95rem;
-    font-weight: bold;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+  }
+  .last-torrent .info .show {
+    font-size: 0.9rem;
+    font-weight: initial;
   }
   .no-last-torrent {
     display: flex;
@@ -144,11 +144,9 @@
   <div class="message">Último torrent encontrado:</div>
   <div class="last-torrent">
     {#if schedule.lastTorrent}
-      <div>
-        <img
-          src={'/image?path=' + schedule.lastTorrent.imagen}
-          alt={schedule.lastTorrent.name} />
-      </div>
+      <img
+        src={'/image?path=' + schedule.lastTorrent.imagen}
+        alt={schedule.lastTorrent.name} />
       <div class="info">
         <div title="Nombre del torrent">{schedule.lastTorrent.name}</div>
         {#if schedule.lastTorrent.season}
