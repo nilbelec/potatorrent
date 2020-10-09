@@ -98,6 +98,7 @@
     font-size: 3rem;
   }
   .options {
+    margin-top: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;

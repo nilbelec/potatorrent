@@ -38,7 +38,6 @@
 
 <style>
   .wrapper {
-    padding: 0rem 10rem;
   }
   div {
     margin-bottom: 1rem;
