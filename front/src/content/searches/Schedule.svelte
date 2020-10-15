@@ -71,6 +71,7 @@
   .last-torrent {
     display: flex;
     height: 148px;
+    padding: 4px 8px;
   }
   .last-torrent img {
     height: 148px;
@@ -80,9 +81,12 @@
     margin-left: 6px;
     font-weight: bolder;
     font-size: 0.95rem;
+    width: 100%;
+    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    align-items: center;
   }
   .last-torrent .info .show {
     font-size: 0.9rem;
@@ -152,14 +156,14 @@
         <div title="Nombre del torrent">{schedule.lastTorrent.name}</div>
         {#if schedule.lastTorrent.season}
           <div class="show">
-            <span>Temporada {schedule.lastTorrent.season}</span>
-            <span>
+            <div>Temporada {schedule.lastTorrent.season}</div>
+            <div>
               {#if schedule.lastTorrent.singleEpisode}
                 Capítulo {schedule.lastTorrent.firstEpisode}
               {:else}
                 Capítulos del {schedule.lastTorrent.firstEpisode} al {schedule.lastTorrent.lastEpisode}
               {/if}
-            </span>
+            </div>
           </div>
         {/if}
       </div>
