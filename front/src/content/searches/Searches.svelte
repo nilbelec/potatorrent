@@ -80,7 +80,8 @@
   .schedules {
     display: grid;
     grid-gap: 1.4rem;
-    grid-template-columns: repeat(auto-fit, minmax(282px, 1fr));
+    grid-template-columns: repeat(auto-fit, 282px);
+    justify-content: center;
   }
 </style>
 
