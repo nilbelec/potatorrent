@@ -37,8 +37,6 @@
 </script>
 
 <style>
-  .wrapper {
-  }
   div {
     margin-bottom: 1rem;
   }
@@ -105,80 +103,76 @@
   }
 </style>
 
-<div class="wrapper">
-  {#if errorLoading}
-    <Error
-      message={'Ups! Se ha producido un error al cargar la configuración'} />
-  {:else}
-    <form on:submit|preventDefault={handleSubmit}>
-      <div>
-        <label>Carpeta de descarga por defecto</label>
-        <input {disabled} bind:value={conf.downloadFolder} required />
-        <small>
-          En esta carpeta se descargarán los torrents de las búsquedas
-          programadas
-        </small>
+{#if errorLoading}
+  <Error message={'Ups! Se ha producido un error al cargar la configuración'} />
+{:else}
+  <form on:submit|preventDefault={handleSubmit}>
+    <div>
+      <label>Carpeta de descarga por defecto</label>
+      <input {disabled} bind:value={conf.downloadFolder} required />
+      <small>
+        En esta carpeta se descargarán los torrents de las búsquedas programadas
+      </small>
+    </div>
+    <div>
+      <label>Intervalo de ejecución</label>
+      <input
+        {disabled}
+        bind:value={conf.intervalInMinutes}
+        type="number"
+        min="1"
+        step="1"
+        required />
+      <small>
+        ¿Cada cuántos minutos comprobarán las búsquedas programadas si hay
+        torrents nuevos?
+      </small>
+    </div>
+    <div class="show-advanced">
+      <div on:click={() => (showAdvanced = !showAdvanced)}>
+        <span class="icon" class:rotate={showAdvanced}>
+          <Icon data={caretDown} scale={1.5} />
+        </span>
+        <span>Parámetros avanzados</span>
       </div>
-      <div>
-        <label>Intervalo de ejecución</label>
-        <input
-          {disabled}
-          bind:value={conf.intervalInMinutes}
-          type="number"
-          min="1"
-          step="1"
-          required />
-        <small>
-          ¿Cada cuántos minutos comprobarán las búsquedas programadas si hay
-          torrents nuevos?
-        </small>
-      </div>
-      <div class="show-advanced">
-        <div on:click={() => (showAdvanced = !showAdvanced)}>
-          <span class="icon" class:rotate={showAdvanced}>
-            <Icon data={caretDown} scale={1.5} />
-          </span>
-          <span>Parámetros avanzados</span>
+    </div>
+    {#if showAdvanced}
+      <div class="advanced" transition:shrink|local>
+        <div class="warning">
+          <Icon data={warning} />
+          <strong>¡Ojo!</strong>
+          No modifiques estos valores si no sabes lo que estás haciendo
+        </div>
+        <div>
+          <label>Web a examinar</label>
+          <input {disabled} bind:value={conf.baseURL} type="url" required />
+          <small>URL de la web donde buscar los torrents</small>
+        </div>
+        <div>
+          <label>Puerto de la web</label>
+          <input
+            {disabled}
+            bind:value={conf.port}
+            type="number"
+            min="8000"
+            step="1"
+            max="9999"
+            required />
+          <small>
+            Puerto donde se levantará la web. Deberás reiniciar la aplicación
+            para que surta efecto.
+          </small>
         </div>
       </div>
-      {#if showAdvanced}
-        <div class="advanced" transition:shrink|local>
-          <div class="warning">
-            <Icon data={warning} />
-            <strong>¡Ojo!</strong>
-            No modifiques estos valores si no sabes lo que estás haciendo
-          </div>
-          <div>
-            <label>Web a examinar</label>
-            <input {disabled} bind:value={conf.baseURL} type="url" required />
-            <small>URL de la web donde buscar los torrents</small>
-          </div>
-          <div>
-            <label>Puerto de la web</label>
-            <input
-              {disabled}
-              bind:value={conf.port}
-              type="number"
-              min="8000"
-              step="1"
-              max="9999"
-              required />
-            <small>
-              Puerto donde se levantará la web. Deberás reiniciar la aplicación
-              para que surta efecto.
-            </small>
-          </div>
-        </div>
+    {/if}
+    <div class="bottom">
+      <button {disabled} type="submit">Guardar Cambios</button>
+      {#if errorMessage}
+        <Error noImage={true} message={errorMessage} />
       {/if}
-      <div class="bottom">
-        <button {disabled} type="submit">Guardar Cambios</button>
-        {#if errorMessage}
-          <Error noImage={true} message={errorMessage} />
-        {/if}
-        {#if saved}
-          <Success message={'Cambios Guardados'} />
-        {/if}
-      </div>
-    </form>
-  {/if}
-</div>
+      {#if saved}
+        <Success message={'Cambios Guardados'} />
+      {/if}
+    </div>
+  </form>
+{/if}
