@@ -47,8 +47,8 @@
     flex-direction: column;
     border-radius: 9px;
   }
-  .torrent:hover .download-opts,
-  .torrent .download-opts.keep {
+  .image:hover .download-opts,
+  .image .download-opts.keep {
     opacity: 1;
   }
   .download-opts .size {
@@ -60,9 +60,20 @@
     font-size: 0.8rem;
     font-weight: bolder;
   }
-  .download-opts .info {
+  .download-opts .opts-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     color: white;
-    margin: 1rem 1rem auto auto;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0.5rem 0 0.5rem;
+  }
+  .download-opts .opts-top .date {
+    font-size: 0.8rem;
+    font-weight: bolder;
+  }
+  .download-opts .opts-top .info {
     background-color: rgb(0, 192, 255);
     border-radius: 12px;
     width: 24px;
@@ -100,8 +111,11 @@
       class="image"
       style="background-image:url({'/image?path=' + torrent.imagen})">
       <div class="download-opts" class:keep={keepOptions}>
-        <div class="info" title={torrent.fullName}>
-          <Icon data={info} />
+        <div class="opts-top">
+          <div class="date" title="Fecha de publicación">{torrent.date}</div>
+          <div class="info" title={torrent.fullName}>
+            <Icon data={info} />
+          </div>
         </div>
         <DownloadButton bind:show={keepOptions} {torrent} />
         <div class="size" title="Tamaño del contenido">

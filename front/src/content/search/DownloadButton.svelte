@@ -1,5 +1,9 @@
 <script>
-  import { getDownloadInfo } from "../../api.js";
+  import {
+    getDownloadInfo,
+    getDownloadLink,
+    downloadOnFolder
+  } from "../../api.js";
   import { copyToClipBoard } from "../../utils.js";
   import Icon from "svelte-awesome";
   import {
@@ -33,7 +37,8 @@
     if (!downloadInfo || !downloadInfo.url) {
       error = true;
     } else {
-      window.open(downloadInfo.url);
+      const url = getDownloadLink(downloadInfo.url);
+      window.location.assign(url);
       downloaded = true;
     }
     doingRequest = false;
@@ -42,7 +47,7 @@
   async function downloadTorrentOnFolder() {
     doingRequest = true;
     downloaded = false;
-    await tryDownloadInfo(true);
+    await tryDownloadOnFolder();
     if (!downloadInfo || !downloadInfo.url) error = true;
     else downloaded = true;
     doingRequest = false;
@@ -81,10 +86,19 @@
     doingRequest = false;
   }
 
-  async function tryDownloadInfo(onFolder = false) {
+  async function tryDownloadInfo() {
     error = false;
     try {
-      downloadInfo = await getDownloadInfo(torrent, onFolder);
+      downloadInfo = await getDownloadInfo(torrent);
+    } catch {
+      error = true;
+    }
+  }
+
+  async function tryDownloadOnFolder() {
+    error = false;
+    try {
+      downloadInfo = await downloadOnFolder(torrent);
     } catch {
       error = true;
     }
@@ -106,7 +120,7 @@
     margin: 0;
     cursor: pointer;
     background-color: red;
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 0.6rem 1rem;
   }
   button:hover {

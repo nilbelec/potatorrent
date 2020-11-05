@@ -145,6 +145,7 @@ export async function searchTorrents(cat, subCat, quality, q, page) {
                 return Object.keys(json.data.torrents[k]).map(j => {
                     let torrent = json.data.torrents[k][j];
                     torrent.fullName = torrent.torrentName;
+                    torrent.date = torrent.torrentDateAdded;
                     torrent.name = extractName(torrent.torrentName);
                     torrent.season = extractSeason(torrent.torrentName);
                     torrent.firstEpisode = extractFirstEpisode(torrent.torrentName, torrent.season);
@@ -161,8 +162,17 @@ export async function searchTorrents(cat, subCat, quality, q, page) {
     return json;
 }
 
-export function getDownloadInfo(torrent, onFolder = false) {
-    return fetchJSON(`/api/download?id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}&folder=${onFolder}`);
+export function getDownloadInfo(torrent) {
+    return fetchJSON(`/api/download/info?id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`);
+}
+
+export function getDownloadLink(url) {
+    const urlEnc = encodeURIComponent(url);
+    return `/api/download/file?url=${urlEnc}`;
+}
+
+export function downloadOnFolder(torrent) {
+    return fetchJSON(`/api/download/onFolder?id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`);
 }
 
 function prepareImage(img) {
