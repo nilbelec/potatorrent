@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/nilbelec/potatorrent/pkg/config"
@@ -73,17 +72,55 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 	return &r, err
 }
 
-func (c *Crawler) SearchTorrentInfo(id string, date string, path string) (*TorrentInfo, error) {
+func (c *Crawler) SearchTorrentInfo(id string, date string, path string, season string, firstEpisode string, lastEpisode string) (*TorrentInfo, error) {
+	if season != "" && firstEpisode != "" {
+		result, err := findTorrentEpisode(c.cfg.BaseURL(), id, path, season, firstEpisode, lastEpisode)
+		if err == nil {
+			return result, nil
+		}
+	}
 	url := c.cfg.BaseURL() + "/" + path
 	urlScheme := strings.Split(url, ":")[0]
 	result, err := findTorrent(id, url, false, urlScheme)
 	if err == nil {
 		return result, nil
 	}
-	return trySearchTorrent(id, date, url)
+	return trySearchTorrent(id, date, season, firstEpisode, url)
 }
 
-func trySearchTorrent(id string, date string, url string) (*TorrentInfo, error) {
+func findTorrentEpisode(baseURL string, id string, path string, season string, firstEpisode string, lastEpisode string) (*TorrentInfo, error) {
+	url := baseURL + "/"
+	split := strings.Split(path, "/")
+	if len(split) != 3 {
+		log.Println("No valid path for torrent episode for " + id + " with path " + path)
+		return nil, errors.New("No valid path for torrent episode")
+	}
+	if split[0] == "series-hd" {
+		url += "descargar/serie-en-hd/"
+	} else {
+		url += "descargar/serie/"
+	}
+	url += split[1] + "/temporada-" + season + "/capitulo-"
+	if len(firstEpisode) == 1 {
+		url += "0"
+	}
+	url += firstEpisode
+	if lastEpisode != "" {
+		url += "-al-"
+		if len(lastEpisode) == 1 {
+			url += "0"
+		}
+		url += lastEpisode
+	}
+	urlScheme := strings.Split(url, ":")[0]
+	result, err := findTorrent(id, url, false, urlScheme)
+	if err == nil {
+		return result, nil
+	}
+	return findTorrent(id, url+"/", false, urlScheme)
+}
+
+func trySearchTorrent(id string, date string, season string, firstEpisode string, url string) (*TorrentInfo, error) {
 	pg := 1
 	urlScheme := strings.Split(url, ":")[0]
 	for {
@@ -119,16 +156,9 @@ func extractLiDownloadPage(li *html.Node) string {
 
 func prepareTorrentLinkRegexes(id string, strict bool) []string {
 	var regexes []string
-	i, err := strconv.Atoi(id)
-	idPlusOne := id
-	if err == nil {
-		idPlusOne = strconv.Itoa(i + 1)
-	}
 	if strict {
 		regexes = append(regexes, "\".+/download\\/"+id+".+\"")
-		regexes = append(regexes, "\".+/download\\/"+idPlusOne+".+\"")
 		regexes = append(regexes, "\".+/descargar-torrent\\/"+id+".+\"")
-		regexes = append(regexes, "\".+/descargar-torrent\\/"+idPlusOne+".+\"")
 	} else {
 		regexes = append(regexes, "\".+/download\\/.+\"")
 		regexes = append(regexes, "\".+/descargar-torrent\\/.+\"")

@@ -162,8 +162,20 @@ export async function searchTorrents(cat, subCat, quality, q, page) {
     return json;
 }
 
+function getTorrentDownloadQueryParams(torrent) {
+    let url = `${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`;
+    if (torrent.season)
+        url += `&season=${torrent.season}`
+    if (torrent.firstEpisode)
+        url += `&firstEpisode=${torrent.firstEpisode}`
+    if (torrent.lastEpisode)
+        url += `&lastEpisode=${torrent.lastEpisode}`
+    return url;
+}
+
 export function getDownloadInfo(torrent) {
-    return fetchJSON(`/api/download/info?id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`);
+    const params = getTorrentDownloadQueryParams(torrent);
+    return fetchJSON(`/api/download/info?${params}`);
 }
 
 export function getDownloadLink(url) {
@@ -172,7 +184,8 @@ export function getDownloadLink(url) {
 }
 
 export function downloadOnFolder(torrent) {
-    return fetchJSON(`/api/download/onFolder?id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`);
+    const params = getTorrentDownloadQueryParams(torrent);
+    return fetchJSON(`/api/download/onFolder?${params}`);
 }
 
 function prepareImage(img) {

@@ -36,7 +36,10 @@ func (h *Handler) downloadInfo(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
 	id := r.URL.Query().Get("id")
 	date := r.URL.Query().Get("date")
-	result, err := h.c.SearchTorrentInfo(id, date, guid)
+	season := r.URL.Query().Get("season")
+	firstEpisode := r.URL.Query().Get("firstEpisode")
+	lastEpisode := r.URL.Query().Get("lastEpisode")
+	result, err := h.c.SearchTorrentInfo(id, date, guid, season, firstEpisode, lastEpisode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -75,7 +78,10 @@ func (h *Handler) downloadFileOnFolder(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
 	id := r.URL.Query().Get("id")
 	date := r.URL.Query().Get("date")
-	result, err := h.c.SearchTorrentInfo(id, date, guid)
+	season := r.URL.Query().Get("season")
+	firstEpisode := r.URL.Query().Get("firstEpisode")
+	lastEpisode := r.URL.Query().Get("lastEpisode")
+	result, err := h.c.SearchTorrentInfo(id, date, guid, season, firstEpisode, lastEpisode)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
