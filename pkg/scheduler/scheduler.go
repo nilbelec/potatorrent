@@ -131,7 +131,11 @@ func (s *Scheduler) run(id string) {
 			break
 		}
 		log.Printf("[%s] - Found new torrent \"%s\"\n", ss, t.TorrentName)
-		s.downloadTorrent(t, ss)
+		err := s.downloadTorrent(t, ss)
+		if err != nil {
+			log.Printf("[%s] - Unable to download torrent file for \"%s\"\n", ss, t.TorrentName)
+			ss.Error = "No se ha podido descargar el fichero torrent " + t.TorrentName
+		}
 	}
 	if len(ts) > 0 {
 		ss.LastTorrentID = ts[0].TorrentID

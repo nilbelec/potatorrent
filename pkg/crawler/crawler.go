@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/nilbelec/potatorrent/pkg/config"
@@ -90,11 +91,13 @@ func trySearchTorrent(id string, date string, url string) (*TorrentInfo, error) 
 		log.Println("Searching for torrent " + id + " in " + u)
 		doc, err := getAndParse(u)
 		if err != nil {
+			log.Println("Error parsing request: " + err.Error())
 			return nil, errors.New("Error parsing request: " + err.Error())
 		}
 		any := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li")
 		if len(any) == 0 {
-			return &TorrentInfo{}, nil
+			log.Println("No episodes found for " + id + " in " + u)
+			return &TorrentInfo{}, errors.New("No episodes found for " + id + " in " + u)
 		}
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
@@ -114,35 +117,58 @@ func extractLiDownloadPage(li *html.Node) string {
 	return href
 }
 
+func prepareTorrentLinkRegexes(id string, strict bool) []string {
+	var regexes []string
+	i, err := strconv.Atoi(id)
+	idPlusOne := id
+	if err == nil {
+		idPlusOne = strconv.Itoa(i + 1)
+	}
+	if strict {
+		regexes = append(regexes, "\".+/download\\/"+id+".+\"")
+		regexes = append(regexes, "\".+/download\\/"+idPlusOne+".+\"")
+		regexes = append(regexes, "\".+/descargar-torrent\\/"+id+".+\"")
+		regexes = append(regexes, "\".+/descargar-torrent\\/"+idPlusOne+".+\"")
+	} else {
+		regexes = append(regexes, "\".+/download\\/.+\"")
+		regexes = append(regexes, "\".+/descargar-torrent\\/.+\"")
+	}
+	return regexes
+}
+
+func matchAnyRegexes(regexes []string, text string) (string, error) {
+	for _, rex := range regexes {
+		re := regexp.MustCompile(rex)
+		match := re.FindStringSubmatch(text)
+		if len(match) > 0 {
+			return match[0], nil
+		}
+	}
+	return "", errors.New("No match found")
+}
+
 func findTorrent(id string, url string, strict bool, URLScheme string) (*TorrentInfo, error) {
 	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
 	}
-	rex := "\".+/download\\/.+\""
-	if strict {
-		rex = "\".+/download\\/" + id + ".+\""
-	}
-	re := regexp.MustCompile(rex)
-	match := re.FindStringSubmatch(text)
-	if len(match) == 0 {
-		rex = "\".+/descargar-torrent\\/.+\""
-		if strict {
-			rex = "\".+/descargar-torrent\\/" + id + ".+\""
+	regexes := prepareTorrentLinkRegexes(id, strict)
+	for _, rex := range regexes {
+		log.Println("Searching torrent link for " + id + " in " + url + " using the regex " + rex)
+		match, err := matchAnyRegexes(regexes, text)
+		if err != nil {
+			log.Println("Failed finding torrent link for " + id + " in " + url + " using the regex " + rex)
+			continue
 		}
-		re = regexp.MustCompile(rex)
-		match = re.FindStringSubmatch(text)
-		if len(match) == 0 {
-			return nil, errors.New("Unable to find the download link")
+		r := &TorrentInfo{
+			URL:      URLScheme + ":" + strings.Trim(match, "\""),
+			Password: findPassword(url),
 		}
+		log.Println("Found torrent file for " + id + ": " + r.URL)
+		return r, nil
 	}
-	r := &TorrentInfo{
-		URL:      URLScheme + ":" + strings.Trim(match[0], "\""),
-		Password: findPassword(url),
-	}
-	log.Println("Found torrent file for " + id + ": " + r.URL)
-	return r, nil
+	return nil, errors.New("Unable to find the download link")
 }
 
 func findPassword(url string) string {
