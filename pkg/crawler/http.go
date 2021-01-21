@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/nilbelec/potatorrent/pkg/util"
@@ -40,7 +41,7 @@ func getString(url string) (string, error) {
 		return "", errors.New("Page \"" + url + "\" not found")
 	}
 	if res.StatusCode != 200 {
-		return "", errors.New("Error while requesting the page \"" + url + "\". StatusCode: " + string(res.StatusCode))
+		return "", errors.New("Error while requesting the page \"" + url + "\". StatusCode: " + strconv.Itoa(res.StatusCode))
 	}
 	defer res.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(res.Body)
