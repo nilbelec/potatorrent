@@ -108,12 +108,12 @@ export async function deleteSchedule(id) {
 export async function saveSearch(searchParams) {
     const data = {
         "params": {
-            "categoria": searchParams && searchParams.category && searchParams.category.value,
-            "categoriaTexto": searchParams && searchParams.category && searchParams.category.label,
-            "subcategoria": searchParams && searchParams.subCategory && searchParams.subCategory.value,
-            "subcategoriaTexto": searchParams && searchParams.subCategory && searchParams.subCategory.label,
-            "calidad": searchParams && searchParams.quality && searchParams.quality.value,
-            "calidadTexto": searchParams && searchParams.quality && searchParams.quality.label,
+            "categoria": searchParams && searchParams.category,
+            "categoriaTexto": searchParams && searchParams.categoryLabel,
+            "subcategoria": searchParams && searchParams.subCategory,
+            "subcategoriaTexto": searchParams && searchParams.subCategoryLabel,
+            "calidad": searchParams && searchParams.quality,
+            "calidadTexto": searchParams && searchParams.qualityLabel,
             "q": searchParams && searchParams.text
         }
     }

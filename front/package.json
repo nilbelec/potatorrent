@@ -22,7 +22,7 @@
     "svelte-lazy": "^1.0.5",
     "svelte-loading-spinners": "^0.1.1",
     "svelte-routing": "^1.4.2",
-    "svelte-select": "^3.11.1",
+    "svelte-select": "^3.16.1",
     "svelte-toggle": "^1.0.0"
   }
 }

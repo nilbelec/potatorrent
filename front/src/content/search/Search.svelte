@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onDestroy } from "svelte";
   import SaveSearch from "./SaveSearch.svelte";
   import SearchForm from "./SearchForm.svelte";
   import Info from "../components/Info.svelte";
@@ -7,6 +7,7 @@
   import SearchResult from "./SearchResult.svelte";
   import SvelteInfiniteScroll from "svelte-infinite-scroll";
   import { BarLoader } from "svelte-loading-spinners";
+  import { searchParamsStore } from "../../stores.js";
 
   import { searchTorrents } from "../../api.js";
 
@@ -25,9 +26,9 @@
     error = false;
     try {
       const searchResult = await searchTorrents(
-        searchParams.category && searchParams.category.value,
-        searchParams.subCategory && searchParams.subCategory.value,
-        searchParams.quality && searchParams.quality.value,
+        searchParams.category,
+        searchParams.subCategory,
+        searchParams.quality,
         searchParams.text,
         page
       );
@@ -42,38 +43,29 @@
     loading = false;
   }
 
-  onMount(fetchData);
-
   let loading = false;
   let error = false;
   let page = 1;
   let searchParams;
   $: torrents = [...torrents, ...newBatch];
+
+  const unsubscribe = searchParamsStore.subscribe((params) => {
+    searchParams = params;
+    search();
+  });
+
+  onDestroy(unsubscribe);
 </script>
 
-<style>
-  .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem 0;
-  }
-  .save-search {
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: flex-end;
-  }
-</style>
-
-<SearchForm bind:searchParams handleSubmit={search} disabled={loading} />
+<SearchForm disabled={loading} />
 <div class="save-search">
   <SaveSearch {searchParams} disabled={loading} />
 </div>
 
 {#if error}
-  <Error message={'Ups! Se ha producido un error al realizar la búsqueda...'} />
+  <Error message={"Ups! Se ha producido un error al realizar la búsqueda..."} />
 {:else if !loading && !torrents.length}
-  <Info message={'No se han encontrado resultados'} />
+  <Info message={"No se han encontrado resultados"} />
 {:else}
   <SearchResult {torrents} />
   {#if loading}
@@ -89,5 +81,20 @@
     on:loadMore={() => {
       page++;
       fetchData();
-    }} />
+    }}
+  />
 {/if}
+
+<style>
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+  }
+  .save-search {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
