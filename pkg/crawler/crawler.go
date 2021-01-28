@@ -113,11 +113,11 @@ func findTorrentEpisode(baseURL string, id string, path string, season string, f
 		url += lastEpisode
 	}
 	urlScheme := strings.Split(url, ":")[0]
-	result, err := findTorrent(id, url, false, urlScheme)
+	result, err := findTorrent(id, url+"/", false, urlScheme)
 	if err == nil {
 		return result, nil
 	}
-	return findTorrent(id, url+"/", false, urlScheme)
+	return findTorrent(id, url, false, urlScheme)
 }
 
 func trySearchTorrent(id string, date string, season string, firstEpisode string, url string) (*TorrentInfo, error) {

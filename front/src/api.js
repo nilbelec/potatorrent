@@ -163,7 +163,7 @@ export async function searchTorrents(cat, subCat, quality, q, page) {
 }
 
 function getTorrentDownloadQueryParams(torrent) {
-    let url = `${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`;
+    let url = `id=${torrent.torrentID}&guid=${torrent.guid}&date=${torrent.torrentDateAdded}`;
     if (torrent.season)
         url += `&season=${torrent.season}`
     if (torrent.firstEpisode)
