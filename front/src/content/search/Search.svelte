@@ -57,7 +57,7 @@
   onDestroy(unsubscribe);
 </script>
 
-<SearchForm disabled={loading} />
+<SearchForm />
 <div class="save-search">
   <SaveSearch {searchParams} disabled={loading} />
 </div>

@@ -1,5 +1,7 @@
 <script>
   import Select from "svelte-select";
+  import Icon from "svelte-awesome";
+  import { search } from "svelte-awesome/icons";
   import { searchOptions, searchSubCategories } from "../../api.js";
   import { searchParamsStore, searchOptsStore } from "../../stores.js";
   import { onMount } from "svelte";
@@ -7,10 +9,20 @@
 
   export let disabled = false;
 
-  let category = undefined;
-  let subCategory = undefined;
-  let quality = undefined;
-  let text = "";
+  let params = get(searchParamsStore);
+  let selectedCategory = params.category && {
+    value: params.category,
+    label: params.categoryLabel,
+  };
+  let selectedSubCategory = params.subCategory && {
+    value: params.subCategory,
+    label: params.subCategoryLabel,
+  };
+  let selectedQuality = params.quality && {
+    value: params.quality,
+    label: params.qualityLabel,
+  };
+  let text = params.text;
 
   let categories = [];
   let subCategories = [];
@@ -19,7 +31,6 @@
   const load = async () => {
     try {
       let opts = get(searchOptsStore);
-      let params = get(searchParamsStore);
 
       if (!opts || !opts.categories) {
         opts = await searchOptions();
@@ -27,25 +38,10 @@
       }
 
       categories = opts.categories;
-      category = params.category && {
-        value: params.category,
-        label: params.categoryLabel,
-      };
-
       qualities = opts.qualities;
-      quality = params.quality && {
-        value: params.quality,
-        label: params.qualityLabel,
-      };
-
       if (params.category) {
         await prepareSubCategories(opts, params.category);
       }
-      subCategory = params.subCategory && {
-        value: params.subCategory,
-        label: params.subCategoryLabel,
-      };
-      text = params.text;
     } catch {}
   };
 
@@ -59,19 +55,22 @@
   }
 
   async function onSelectCategory(e) {
-    subCategory = undefined;
+    selectedCategory = e.detail;
+    selectedSubCategory = undefined;
+    updateStore();
+
     let opts = get(searchOptsStore);
-    await prepareSubCategories(opts, e.detail.value);
+    await prepareSubCategories(opts, selectedCategory.value);
   }
 
-  function submit() {
+  function updateStore() {
     searchParamsStore.set({
-      category: category && category.value,
-      categoryLabel: category && category.label,
-      subCategory: subCategory && subCategory.value,
-      subCategoryLabel: subCategory && subCategory.label,
-      quality: quality && quality.value,
-      qualityLabel: quality && quality.label,
+      category: selectedCategory && selectedCategory.value,
+      categoryLabel: selectedCategory && selectedCategory.label,
+      subCategory: selectedSubCategory && selectedSubCategory.value,
+      subCategoryLabel: selectedSubCategory && selectedSubCategory.label,
+      quality: selectedQuality && selectedQuality.value,
+      qualityLabel: selectedQuality && selectedQuality.label,
       text,
     });
   }
@@ -79,34 +78,61 @@
   onMount(load);
 </script>
 
-<form on:submit|preventDefault={submit}>
+<form on:submit|preventDefault>
   <Select
     items={categories}
-    bind:selectedValue={category}
+    selectedValue={selectedCategory}
     on:select={onSelectCategory}
-    on:clear={() => (subCategory = undefined)}
+    on:clear={() => {
+      selectedCategory = undefined;
+      selectedSubCategory = undefined;
+      updateStore();
+    }}
     isDisabled={disabled || categories.length == 0}
     placeholder="Filtrar por categoría"
   />
   <Select
     items={subCategories}
-    bind:selectedValue={subCategory}
-    isDisabled={disabled || category == undefined || subCategories.length == 0}
+    selectedValue={selectedSubCategory}
+    on:select={(e) => {
+      selectedSubCategory = e.detail;
+      updateStore();
+    }}
+    on:clear={() => {
+      selectedSubCategory = undefined;
+      updateStore();
+    }}
+    isDisabled={disabled ||
+      selectedCategory == undefined ||
+      subCategories.length == 0}
     placeholder="Filtrar por subcategoría"
   />
   <Select
     items={qualities}
-    bind:selectedValue={quality}
+    selectedValue={selectedQuality}
+    on:select={(e) => {
+      selectedQuality = e.detail;
+      updateStore();
+    }}
+    on:clear={() => {
+      selectedQuality = undefined;
+      updateStore();
+    }}
     isDisabled={disabled || qualities.length == 0}
     placeholder="Filtrar por calidad o tipo"
   />
-  <input
-    {disabled}
-    value={text}
-    type="search"
-    placeholder="Filtrar por palabras"
-  />
-  <button {disabled} type="submit">Buscar</button>
+  <div>
+    <input
+      {disabled}
+      bind:value={text}
+      on:search={updateStore}
+      type="search"
+      placeholder="Filtrar por palabras"
+    />
+    <button type="button" on:click={updateStore}>
+      <Icon data={search} />
+    </button>
+  </div>
 </form>
 
 <style>
@@ -117,13 +143,20 @@
     row-gap: 10px;
     margin-bottom: 1rem;
   }
-  input {
+  div {
     grid-column-start: 1;
     grid-column-end: 4;
+    display: flex;
+    border: 1px solid #d8dbdf;
+    border-radius: 3px;
   }
-  button {
-    grid-column-start: 1;
-    grid-column-end: 4;
-    height: 42px;
+  div input {
+    border: 0;
+    padding-right: 0;
+  }
+  div button {
+    border: 0;
+    box-shadow: none;
+    width: 48px;
   }
 </style>

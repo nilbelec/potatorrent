@@ -1,13 +1,19 @@
 <script>
-  import { scale } from "svelte/transition";
+  import { fade, blur } from "svelte/transition";
   import { Route } from "svelte-routing";
 
   export let path;
 
   const duration = 280;
-  let inProps = { y: -1000, duration: duration };
+  let inProps = { y: -1000, delay: duration };
   let outProps = { duration: duration, y: 1000 };
 </script>
+
+<Route {path}>
+  <div class="animated" in:fade={inProps} out:fade={outProps}>
+    <slot />
+  </div>
+</Route>
 
 <style>
   .animated {
@@ -16,9 +22,3 @@
     padding-bottom: 2rem;
   }
 </style>
-
-<Route {path}>
-  <div class="animated" in:scale={inProps} out:scale={outProps}>
-    <slot />
-  </div>
-</Route>
