@@ -9,6 +9,44 @@
   let keepOptions = false;
 </script>
 
+<div class="torrent">
+  <div class="quality">{torrent.calidad}</div>
+  <Lazy height={250}>
+    <div
+      class="image"
+      style="background-image:url({'/image?path=' + torrent.imagen})"
+    >
+      <div class="download-opts" class:keep={keepOptions}>
+        <div class="opts-top">
+          <div class="date" title="Fecha de publicación">{torrent.date}</div>
+          <div class="info" title={torrent.fullName}>
+            <Icon data={info} />
+          </div>
+        </div>
+        <DownloadButton bind:show={keepOptions} {torrent} />
+        <div class="size" title="Tamaño del contenido">
+          {torrent.torrentSize}
+        </div>
+      </div>
+    </div>
+  </Lazy>
+  <div class="bottom">
+    <div class="name">{torrent.name}</div>
+    {#if torrent.season}
+      <div class="show">
+        <span>Temporada {torrent.season}</span>
+        <span>
+          {#if torrent.singleEpisode}
+            Capítulo {torrent.firstEpisode}
+          {:else}
+            Capítulos del {torrent.firstEpisode} al {torrent.lastEpisode}
+          {/if}
+        </span>
+      </div>
+    {/if}
+  </div>
+</div>
+
 <style>
   .torrent {
     display: flex;
@@ -91,6 +129,7 @@
     justify-content: space-between;
   }
   .name {
+    color: #ff3e00;
     text-align: center;
     padding: 4px 0px 6px 0px;
   }
@@ -103,40 +142,3 @@
     text-align: center;
   }
 </style>
-
-<div class="torrent">
-  <div class="quality">{torrent.calidad}</div>
-  <Lazy height={250}>
-    <div
-      class="image"
-      style="background-image:url({'/image?path=' + torrent.imagen})">
-      <div class="download-opts" class:keep={keepOptions}>
-        <div class="opts-top">
-          <div class="date" title="Fecha de publicación">{torrent.date}</div>
-          <div class="info" title={torrent.fullName}>
-            <Icon data={info} />
-          </div>
-        </div>
-        <DownloadButton bind:show={keepOptions} {torrent} />
-        <div class="size" title="Tamaño del contenido">
-          {torrent.torrentSize}
-        </div>
-      </div>
-    </div>
-  </Lazy>
-  <div class="bottom">
-    <div class="name">{torrent.name}</div>
-    {#if torrent.season}
-      <div class="show">
-        <span>Temporada {torrent.season}</span>
-        <span>
-          {#if torrent.singleEpisode}
-            Capítulo {torrent.firstEpisode}
-          {:else}
-            Capítulos del {torrent.firstEpisode} al {torrent.lastEpisode}
-          {/if}
-        </span>
-      </div>
-    {/if}
-  </div>
-</div>
