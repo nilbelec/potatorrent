@@ -73,6 +73,7 @@ func (c *Crawler) Search(params *SearchParams, page string) (*SearchResult, erro
 }
 
 func (c *Crawler) SearchTorrentInfo(id string, date string, path string, season string, firstEpisode string, lastEpisode string) (*TorrentInfo, error) {
+	path = strings.ReplaceAll(path, "--", "-")
 	if season != "" && firstEpisode != "" {
 		result, err := findTorrentEpisode(c.cfg.BaseURL(), id, path, season, firstEpisode, lastEpisode)
 		if err == nil {
@@ -81,11 +82,11 @@ func (c *Crawler) SearchTorrentInfo(id string, date string, path string, season 
 	}
 	url := c.cfg.BaseURL() + "/" + path
 	urlScheme := strings.Split(url, ":")[0]
-	result, err := findTorrent(id, url, false, urlScheme)
+	result, err := findTorrent(id, url, false, urlScheme, c.cfg.BaseURL())
 	if err == nil {
 		return result, nil
 	}
-	return trySearchTorrent(id, date, season, firstEpisode, url)
+	return trySearchTorrent(id, date, season, firstEpisode, url, c.cfg.BaseURL())
 }
 
 func findTorrentEpisode(baseURL string, id string, path string, season string, firstEpisode string, lastEpisode string) (*TorrentInfo, error) {
@@ -113,14 +114,14 @@ func findTorrentEpisode(baseURL string, id string, path string, season string, f
 		url += lastEpisode
 	}
 	urlScheme := strings.Split(url, ":")[0]
-	result, err := findTorrent(id, url+"/", false, urlScheme)
+	result, err := findTorrent(id, url+"/", false, urlScheme, baseURL)
 	if err == nil {
 		return result, nil
 	}
-	return findTorrent(id, url, false, urlScheme)
+	return findTorrent(id, url, false, urlScheme, baseURL)
 }
 
-func trySearchTorrent(id string, date string, season string, firstEpisode string, url string) (*TorrentInfo, error) {
+func trySearchTorrent(id string, date string, season string, firstEpisode string, url string, baseURL string) (*TorrentInfo, error) {
 	pg := 1
 	urlScheme := strings.Split(url, ":")[0]
 	for {
@@ -139,7 +140,7 @@ func trySearchTorrent(id string, date string, season string, firstEpisode string
 		lis := htmlquery.Find(doc, "//ul[@class=\"buscar-list\"]/li[.//span[contains(text(),'"+strings.ReplaceAll(date, "/", "-")+"')]]")
 		for _, li := range lis {
 			dp := extractLiDownloadPage(li)
-			bytes, err := findTorrent(id, dp, true, urlScheme)
+			bytes, err := findTorrent(id, dp, true, urlScheme, baseURL)
 			if err == nil {
 				return bytes, nil
 			}
@@ -177,11 +178,18 @@ func matchAnyRegexes(regexes []string, text string) (string, error) {
 	return "", errors.New("No match found")
 }
 
-func findTorrent(id string, url string, strict bool, URLScheme string) (*TorrentInfo, error) {
+func findTorrent(id string, url string, strict bool, URLScheme string, baseURL string) (*TorrentInfo, error) {
 	log.Println("Searching for torrent " + id + " in " + url)
 	text, err := getString(url)
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
+	}
+	re := regexp.MustCompile("\"/descargar\\/torrent\\/.+?\"")
+	match := re.FindStringSubmatch(text)
+	if len(match) > 0 {
+		log.Println(match)
+		newURL := baseURL + strings.ReplaceAll(match[0], "\"", "")
+		return findTorrent(id, newURL, strict, URLScheme, baseURL)
 	}
 	regexes := prepareTorrentLinkRegexes(id, strict)
 	for _, rex := range regexes {
