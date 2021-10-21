@@ -70,7 +70,7 @@ func (c *ConfigFile) validate(cfg *Configuration) error {
 	cfg.BaseURL = strings.TrimSuffix(cfg.BaseURL, "/")
 	_, err := url.Parse(cfg.BaseURL)
 	if err != nil {
-		return errors.New("La URL no ex válida")
+		return errors.New("La URL no es válida")
 	}
 	cfg.DownloadFolder = strings.TrimSuffix(cfg.DownloadFolder, "/")
 	if _, err := os.Stat(cfg.DownloadFolder); os.IsNotExist(err) {

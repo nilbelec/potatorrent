@@ -137,7 +137,7 @@ func (s *Scheduler) run(id string) {
 			ss.Error = "No se ha podido descargar el fichero torrent " + t.TorrentName
 		}
 	}
-	if len(ts) > 0 {
+	if len(ts) > 0 && ss.Error == "" {
 		ss.LastTorrentID = ts[0].TorrentID
 		ss.LastTorrentName = ts[0].TorrentName
 		ss.LastTorrentImage = ts[0].Imagen
