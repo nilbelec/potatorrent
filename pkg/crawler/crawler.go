@@ -184,7 +184,7 @@ func findTorrent(id string, url string, strict bool, URLScheme string, baseURL s
 	if err != nil {
 		return nil, errors.New("Error parsing request: " + err.Error())
 	}
-	rex := "\".+/download-link\\/" + id + ".+\""
+	rex := "\"http.*?/download-link\\/" + id + ".*?\""
 	re := regexp.MustCompile(rex)
 	log.Println("Searching torrent link for " + id + " in " + url + " using the regex " + rex)
 	match := re.FindStringSubmatch(text)
