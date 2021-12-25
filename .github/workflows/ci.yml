@@ -37,7 +37,9 @@ jobs:
         run: |
           cd ./src/github.com/${{ github.repository }}
           go get github.com/gobuffalo/packr/packr2
-          packr2
+          cd pkg/web/resources
+          packr2 --legacy
+          cd ../../..
           go get -t -v ./...
           go vet $(go list ./... | grep -v /vendor/)
           go test -v -race ./...
