@@ -94,10 +94,6 @@
     flex-direction: column;
     border-radius: 9px;
   }
-  .image:hover .download-opts,
-  .image .download-opts.keep {
-    opacity: 1;
-  }
   .download-opts .size {
     color: white;
     margin-bottom: 20px;
