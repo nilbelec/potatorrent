@@ -2,7 +2,7 @@
   import {
     getDownloadInfo,
     getDownloadLink,
-    downloadOnFolder
+    downloadOnFolder,
   } from "../../api.js";
   import { copyToClipBoard } from "../../utils.js";
   import Icon from "svelte-awesome";
@@ -13,7 +13,7 @@
     folderOpen,
     copy,
     warning,
-    key
+    key,
   } from "svelte-awesome/icons";
 
   export let torrent;
@@ -105,6 +105,73 @@
   }
 </script>
 
+{#if doingRequest}
+  <div class="container">
+    <Icon data={refresh} spin scale={2} />
+  </div>
+{:else if error}
+  <div class="error">
+    <Icon data={warning} scale={3} />
+    <div>No encontrado...</div>
+    <button
+      on:click={() => {
+        downloadInfo = undefined;
+        error = false;
+      }}
+    >
+      OK
+    </button>
+  </div>
+{:else if downloaded || copied || noPassword}
+  <div class="success">
+    <Icon data={check} scale={2} />
+    {#if downloaded}
+      <div>Descargado</div>
+    {:else if copied}
+      <div>Copiado</div>
+    {:else if noPassword}
+      <div>No necesita contraseña</div>
+    {/if}
+    <button
+      on:click={() => {
+        downloaded = copied = noPassword = false;
+      }}
+    >
+      OK
+    </button>
+  </div>
+{:else}
+  <div class="container">
+    <button
+      class="download-btn"
+      title="Descargar fichero torrent"
+      on:click={downloadTorrent}
+    >
+      Descargar
+    </button>
+    <div class="buttons">
+      <button
+        title="Descargar en la carpeta por defecto"
+        on:click={downloadTorrentOnFolder}
+      >
+        <Icon data={download} />
+      </button>
+      <button
+        title="Copiar enlace del torrent al portapapeles"
+        on:click={copyDownloadUrl}
+      >
+        <Icon data={copy} />
+      </button>
+      <button
+        title="Copiar la contraseña para descomprimir al portapapeles"
+        on:click={copyPassword}
+      >
+        <Icon data={key} />
+      </button>
+    </div>
+  </div>
+{/if}
+
 <style>
   .container {
     margin: auto;
@@ -120,8 +187,8 @@
     margin: 0;
     cursor: pointer;
     background-color: red;
-    font-size: 1rem;
-    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    padding: 0.4rem 1rem;
   }
   button:hover {
     background-color: darkred;
@@ -138,11 +205,11 @@
   .buttons {
     display: flex;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
   }
 
   .buttons > button {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     background-color: rgb(119, 119, 119);
     padding: 0.6rem;
   }
@@ -180,68 +247,7 @@
   .error > div,
   .success > div {
     margin-top: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-align: center;
   }
 </style>
-
-{#if doingRequest}
-  <div class="container">
-    <Icon data={refresh} spin scale={2} />
-  </div>
-{:else if error}
-  <div class="error">
-    <Icon data={warning} scale={3} />
-    <div>No encontrado...</div>
-    <button
-      on:click={() => {
-        downloadInfo = undefined;
-        error = false;
-      }}>
-      OK
-    </button>
-  </div>
-{:else if downloaded || copied || noPassword}
-  <div class="success">
-    <Icon data={check} scale={3} />
-    {#if downloaded}
-      <div>Descargado</div>
-    {:else if copied}
-      <div>Copiado</div>
-    {:else if noPassword}
-      <div>No necesita contraseña</div>
-    {/if}
-    <button
-      on:click={() => {
-        downloaded = copied = noPassword = false;
-      }}>
-      OK
-    </button>
-  </div>
-{:else}
-  <div class="container">
-    <button
-      class="download-btn"
-      title="Descargar fichero torrent"
-      on:click={downloadTorrent}>
-      Descargar
-    </button>
-    <div class="buttons">
-      <button
-        title="Descargar en la carpeta por defecto"
-        on:click={downloadTorrentOnFolder}>
-        <Icon data={download} />
-      </button>
-      <button
-        title="Copiar enlace del torrent al portapapeles"
-        on:click={copyDownloadUrl}>
-        <Icon data={copy} />
-      </button>
-      <button
-        title="Copiar la contraseña para descomprimir al portapapeles"
-        on:click={copyPassword}>
-        <Icon data={key} />
-      </button>
-    </div>
-  </div>
-{/if}

@@ -3,6 +3,13 @@
   import NavMenu from "./NavMenu.svelte";
 </script>
 
+<header>
+  <nav>
+    <Logo />
+    <NavMenu />
+  </nav>
+</header>
+
 <style>
   header {
     position: fixed;
@@ -24,13 +31,6 @@
     align-items: center;
     justify-content: space-between;
     display: flex;
-    padding: 0 4rem;
+    padding: 0 0.5rem;
   }
 </style>
-
-<header>
-  <nav>
-    <Logo />
-    <NavMenu />
-  </nav>
-</header>

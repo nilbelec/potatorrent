@@ -6,6 +6,21 @@
   import CheckVersion from "./CheckVersion.svelte";
 </script>
 
+<main>
+  <CheckVersion />
+  <div class="wrapper">
+    <AnimatedRoute path="/">
+      <Search />
+    </AnimatedRoute>
+    <AnimatedRoute path="/searches">
+      <Searches />
+    </AnimatedRoute>
+    <AnimatedRoute path="/configuration">
+      <Configuration />
+    </AnimatedRoute>
+  </div>
+</main>
+
 <style>
   main {
     padding: 5rem 6rem 4rem 6rem;
@@ -21,19 +36,10 @@
       padding-right: 2rem;
     }
   }
+  @media (max-width: 800px) {
+    main {
+      padding-left: 0.7rem;
+      padding-right: 0.7rem;
+    }
+  }
 </style>
-
-<main>
-  <CheckVersion />
-  <div class="wrapper">
-    <AnimatedRoute path="/">
-      <Search />
-    </AnimatedRoute>
-    <AnimatedRoute path="/searches">
-      <Searches />
-    </AnimatedRoute>
-    <AnimatedRoute path="/configuration">
-      <Configuration />
-    </AnimatedRoute>
-  </div>
-</main>

@@ -42,12 +42,9 @@
     return true;
   };
 
-  $: filtered = schedules.filter(s => {
+  $: filtered = schedules.filter((s) => {
     if (!filter) return true;
-    const words = filter
-      .trim()
-      .toLocaleLowerCase()
-      .split(" ");
+    const words = filter.trim().toLocaleLowerCase().split(" ");
     return (
       matches(words, s.lastTorrent && s.lastTorrent.name) ||
       matches(words, s.params && s.params.categoriaTexto) ||
@@ -67,6 +64,32 @@
   refresh();
 </script>
 
+{#if loading}
+  <div class="loading">
+    <BarLoader />
+  </div>
+{:else if error}
+  <Error message={"Ups! Se ha producido un error al cargar las búsquedas"} />
+{:else if schedules.length}
+  <input type="search" placeholder="Filtrar" bind:value={filter} />
+  {#if filtered.length}
+    <div class="schedules">
+      {#each filtered as schedule (schedule.id)}
+        <div animate:flip={{ duration: 300 }}>
+          <Schedule {schedule} on:deleted={refresh} />
+        </div>
+      {/each}
+    </div>
+  {:else}
+    <Info
+      message={"No hay ninguna búsqueda que cumpla ese filtro..."}
+      withImage={false}
+    />
+  {/if}
+{:else}
+  <Info message={"No tienes ninguna búsqueda programada"} withImage={false} />
+{/if}
+
 <style>
   .loading {
     display: flex;
@@ -84,28 +107,3 @@
     justify-content: center;
   }
 </style>
-
-{#if loading}
-  <div class="loading">
-    <BarLoader />
-  </div>
-{:else if error}
-  <Error message={'Ups! Se ha producido un error al cargar las búsquedas'} />
-{:else if schedules.length}
-  <input type="search" placeholder="Filtrar" bind:value={filter} />
-  {#if filtered.length}
-    <div class="schedules">
-      {#each filtered as schedule (schedule.id)}
-        <div animate:flip={{ duration: 300 }}>
-          <Schedule {schedule} on:deleted={refresh} />
-        </div>
-      {/each}
-    </div>
-  {:else}
-    <Info
-      message={'No hay ninguna búsqueda que cumpla ese filtro...'}
-      withImage={false} />
-  {/if}
-{:else}
-  <Info message={'No tienes ninguna búsqueda programada'} withImage={false} />
-{/if}

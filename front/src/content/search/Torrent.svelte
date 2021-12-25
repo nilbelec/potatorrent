@@ -1,4 +1,5 @@
 <script>
+  import { fly } from "svelte/transition";
   import DownloadButton from "./DownloadButton.svelte";
   import Lazy from "svelte-lazy";
   import Icon from "svelte-awesome";
@@ -7,6 +8,7 @@
   export let torrent;
 
   let keepOptions = false;
+  let visible = false;
 </script>
 
 <div class="torrent">
@@ -15,19 +17,23 @@
     <div
       class="image"
       style="background-image:url({'/image?path=' + torrent.imagen})"
+      on:mouseenter={() => (visible = true)}
+      on:mouseleave={() => (visible = false)}
     >
-      <div class="download-opts" class:keep={keepOptions}>
-        <div class="opts-top">
-          <div class="date" title="Fecha de publicación">{torrent.date}</div>
-          <div class="info" title={torrent.fullName}>
-            <Icon data={info} />
+      {#if visible || keepOptions}
+        <div class="download-opts" transition:fly={{ y: 200, duration: 600 }}>
+          <div class="opts-top">
+            <div class="date" title="Fecha de publicación">{torrent.date}</div>
+            <div class="info" title={torrent.fullName}>
+              <Icon data={info} />
+            </div>
+          </div>
+          <DownloadButton bind:show={keepOptions} {torrent} />
+          <div class="size" title="Tamaño del contenido">
+            {torrent.torrentSize}
           </div>
         </div>
-        <DownloadButton bind:show={keepOptions} {torrent} />
-        <div class="size" title="Tamaño del contenido">
-          {torrent.torrentSize}
-        </div>
-      </div>
+      {/if}
     </div>
   </Lazy>
   <div class="bottom">
@@ -63,12 +69,14 @@
     font-weight: bolder;
   }
   .image {
-    height: 250px;
+    height: 203px;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     position: relative;
     border-radius: 9px;
+    overflow-y: hidden;
+    box-shadow: 0px 0px 10px 1px #ccc;
   }
   .download-opts {
     position: absolute;
@@ -80,6 +88,7 @@
     background-color: rgba(0, 0, 0, 0.7);
     transition: opacity cubic-bezier(0.48, 0.21, 1, 0.79) 280ms;
     display: flex;
+    opacity: 1;
     justify-content: center;
     align-items: center;
     flex-direction: column;
