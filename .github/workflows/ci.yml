@@ -36,7 +36,7 @@ jobs:
       - name: Build Backend
         run: |
           cd ./src/github.com/${{ github.repository }}
-          go get github.com/gobuffalo/packr/packr
+          go get github.com/gobuffalo/packr/...
           packr
           go get -t -v ./...
           go vet $(go list ./... | grep -v /vendor/)
