@@ -13,12 +13,12 @@ import (
 
 // Handler is the resources handler
 type Handler struct {
-	b packr.Box
+	b *packr.Box
 }
 
 // NewHandler creates a new resources handler
 func NewHandler() *Handler {
-	b := packr.NewBox("public")
+	b := packr.New("p", "public")
 	return &Handler{b}
 }
 
