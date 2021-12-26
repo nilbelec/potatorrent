@@ -17,8 +17,9 @@
     <div
       class="image"
       style="background-image:url({'/image?path=' + torrent.imagen})"
-      on:pointerenter={() => (visible = true)}
-      on:pointerleave={() => (visible = false)}
+      on:mouseenter={() => (visible = true)}
+      on:mouseleave={() => (visible = false)}
+      on:touchend|preventDefault={() => (visible = !visible)}
     >
       {#if visible || keepOptions}
         <div class="download-opts" transition:fly={{ y: 200, duration: 600 }}>
@@ -57,7 +58,6 @@
   .torrent {
     display: flex;
     flex-direction: column;
-    border-radius: 2px;
   }
 
   .quality {
@@ -74,9 +74,9 @@
     background-position: center;
     background-size: cover;
     position: relative;
-    border-radius: 9px;
     overflow-y: hidden;
-    box-shadow: 0px 0px 10px 1px #ccc;
+    border-radius: 9px;
+    box-shadow: 0px 0px 10px 2px rgb(179, 179, 179);
   }
   .download-opts {
     position: absolute;
@@ -84,15 +84,12 @@
     left: 0;
     height: 100%;
     width: 100%;
-    opacity: 0;
     background-color: rgba(0, 0, 0, 0.7);
-    transition: opacity cubic-bezier(0.48, 0.21, 1, 0.79) 280ms;
     display: flex;
-    opacity: 1;
     justify-content: center;
+    border-radius: 9px;
     align-items: center;
     flex-direction: column;
-    border-radius: 9px;
   }
   .download-opts .size {
     color: white;
@@ -135,6 +132,7 @@
   }
   .name {
     color: #ff3e00;
+    text-shadow: 0px 1px #ccc;
     text-align: center;
     padding: 4px 0px 6px 0px;
   }

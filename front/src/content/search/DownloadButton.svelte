@@ -111,7 +111,7 @@
   </div>
 {:else if error}
   <div class="error">
-    <Icon data={warning} scale={3} />
+    <Icon data={warning} scale={2} />
     <div>No encontrado...</div>
     <button
       on:click={() => {
@@ -187,7 +187,7 @@
     margin: 0;
     cursor: pointer;
     background-color: red;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     padding: 0.4rem 1rem;
   }
   button:hover {
@@ -248,6 +248,7 @@
   .success > div {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+    font-size: 0.8rem;
     text-align: center;
   }
 </style>
