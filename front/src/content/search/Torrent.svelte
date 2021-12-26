@@ -17,8 +17,8 @@
     <div
       class="image"
       style="background-image:url({'/image?path=' + torrent.imagen})"
-      on:mouseenter={() => (visible = true)}
-      on:mouseleave={() => (visible = false)}
+      on:pointerenter={() => (visible = true)}
+      on:pointerleave={() => (visible = false)}
     >
       {#if visible || keepOptions}
         <div class="download-opts" transition:fly={{ y: 200, duration: 600 }}>
