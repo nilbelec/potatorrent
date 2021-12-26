@@ -1,4 +1,5 @@
 .DS_Store
 schedules.json
+config.json
 potatorrent
 /pkg/web/resources/public/build

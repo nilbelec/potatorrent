@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
+	"runtime"
 
 	"github.com/nilbelec/potatorrent/pkg/config"
 	"github.com/nilbelec/potatorrent/pkg/crawler"
@@ -10,7 +13,6 @@ import (
 	"github.com/nilbelec/potatorrent/pkg/github"
 	"github.com/nilbelec/potatorrent/pkg/scheduler"
 	"github.com/nilbelec/potatorrent/pkg/web"
-	"github.com/pkg/browser"
 )
 
 func main() {
@@ -24,6 +26,25 @@ func main() {
 	folders := folders.NewFolders(config)
 
 	server := web.NewServer(crawler, github, scheduler, folders, downloader, config)
-	browser.OpenURL(fmt.Sprintf("http://localhost:%s", port))
+	openbrowser(fmt.Sprintf("http://localhost:%s", port))
 	server.Start(fmt.Sprintf(":%s", port))
+}
+
+func openbrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
