@@ -19,7 +19,7 @@
       style="background-image:url({'/image?path=' + torrent.imagen})"
       on:mouseenter={() => (visible = true)}
       on:mouseleave={() => (visible = false)}
-      on:touchend|preventDefault={() => (visible = !visible)}
+      on:touchend={() => (visible = !visible)}
     >
       {#if visible || keepOptions}
         <div class="download-opts" transition:fly={{ y: 200, duration: 600 }}>
