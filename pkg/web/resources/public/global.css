@@ -26,6 +26,7 @@ button {
 	transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
 	font-family: 'Lato', sans-serif;
 	letter-spacing: 0.1rem;
+  color: inherit;
   }
 
 button:active, button:hover:not([disabled]) {

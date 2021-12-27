@@ -31,12 +31,31 @@
   }
 </script>
 
+{#if error}
+  <div class="message error" transition:fly|local={{ duration: 1000, x: 200 }}>
+    <span>No se ha podido guardar la búsqueda</span>
+    <Icon data={warning} />
+  </div>
+{:else if success}
+  <div
+    class="message success"
+    transition:fly|local={{ duration: 1000, x: 200 }}
+  >
+    <span>Búsqueda guardada</span>
+    <Icon data={check} />
+  </div>
+{/if}
+<button {disabled} on:click={onClick}>
+  <span>Programar esta búsqueda</span>
+  <Icon data={save} />
+</button>
+
 <style>
   button {
-    display: block;
     padding: 8px 24px;
     display: flex;
     align-items: center;
+    color: inherit;
   }
   button > span {
     margin-right: 8px;
@@ -55,22 +74,10 @@
   .error {
     background: red;
   }
+  @media only screen and (max-width: 500px) {
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
-
-{#if error}
-  <div class="message error" transition:fly|local={{ duration: 1000, x: 200 }}>
-    <span>No se ha podido guardar la búsqueda</span>
-    <Icon data={warning} />
-  </div>
-{:else if success}
-  <div
-    class="message success"
-    transition:fly|local={{ duration: 1000, x: 200 }}>
-    <span>Búsqueda guardada</span>
-    <Icon data={check} />
-  </div>
-{/if}
-<button {disabled} on:click={onClick}>
-  <span>Programar esta búsqueda</span>
-  <Icon data={save} />
-</button>

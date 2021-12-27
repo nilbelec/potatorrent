@@ -42,4 +42,9 @@
       padding-right: 0.7rem;
     }
   }
+  @media only screen and (max-width: 700px) {
+    main {
+      padding-top: 4rem;
+    }
+  }
 </style>

@@ -9,6 +9,15 @@
 
   let keepOptions = false;
   let visible = false;
+
+  let scrollY;
+  const touchstart = function(e) {
+    scrollY = window.scrollY;
+  }
+  const touchend = function(e) {
+    if (scrollY === window.scrollY)
+      visible = !visible;
+  }
 </script>
 
 <div class="torrent">
@@ -19,7 +28,8 @@
       style="background-image:url({'/image?path=' + torrent.imagen})"
       on:mouseenter={() => (visible = true)}
       on:mouseleave={() => (visible = false)}
-      on:touchend={() => (visible = !visible)}
+      on:touchend={touchend}
+      on:touchstart={touchstart}
     >
       {#if visible || keepOptions}
         <div class="download-opts" transition:fly={{ y: 200, duration: 600 }}>

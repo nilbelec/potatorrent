@@ -79,49 +79,55 @@
 </script>
 
 <form on:submit|preventDefault>
-  <Select
-    items={categories}
-    selectedValue={selectedCategory}
-    on:select={onSelectCategory}
-    on:clear={() => {
-      selectedCategory = undefined;
-      selectedSubCategory = undefined;
-      updateStore();
-    }}
-    isDisabled={disabled || categories.length == 0}
-    placeholder="Filtrar por categoría"
-  />
-  <Select
-    items={subCategories}
-    selectedValue={selectedSubCategory}
-    on:select={(e) => {
-      selectedSubCategory = e.detail;
-      updateStore();
-    }}
-    on:clear={() => {
-      selectedSubCategory = undefined;
-      updateStore();
-    }}
-    isDisabled={disabled ||
-      selectedCategory == undefined ||
-      subCategories.length == 0}
-    placeholder="Filtrar por subcategoría"
-  />
-  <Select
-    items={qualities}
-    selectedValue={selectedQuality}
-    on:select={(e) => {
-      selectedQuality = e.detail;
-      updateStore();
-    }}
-    on:clear={() => {
-      selectedQuality = undefined;
-      updateStore();
-    }}
-    isDisabled={disabled || qualities.length == 0}
-    placeholder="Filtrar por calidad o tipo"
-  />
   <div>
+    <Select
+      items={categories}
+      selectedValue={selectedCategory}
+      on:select={onSelectCategory}
+      on:clear={() => {
+        selectedCategory = undefined;
+        selectedSubCategory = undefined;
+        updateStore();
+      }}
+      isDisabled={disabled || categories.length == 0}
+      placeholder="Filtrar por categoría"
+    />
+  </div>
+  <div>
+    <Select
+      items={subCategories}
+      selectedValue={selectedSubCategory}
+      on:select={(e) => {
+        selectedSubCategory = e.detail;
+        updateStore();
+      }}
+      on:clear={() => {
+        selectedSubCategory = undefined;
+        updateStore();
+      }}
+      isDisabled={disabled ||
+        selectedCategory == undefined ||
+        subCategories.length == 0}
+      placeholder="Filtrar por subcategoría"
+    />
+  </div>
+  <div>
+    <Select
+      items={qualities}
+      selectedValue={selectedQuality}
+      on:select={(e) => {
+        selectedQuality = e.detail;
+        updateStore();
+      }}
+      on:clear={() => {
+        selectedQuality = undefined;
+        updateStore();
+      }}
+      isDisabled={disabled || qualities.length == 0}
+      placeholder="Filtrar por calidad o tipo"
+    />
+  </div>
+  <div class="words">
     <input
       {disabled}
       bind:value={text}
@@ -143,20 +149,27 @@
     row-gap: 10px;
     margin-bottom: 1rem;
   }
-  div {
+  div.words {
     grid-column-start: 1;
     grid-column-end: 4;
     display: flex;
     border: 1px solid #d8dbdf;
     border-radius: 3px;
   }
-  div input {
+  div.words input {
     border: 0;
     padding-right: 0;
   }
-  div button {
+  div.words button {
     border: 0;
     box-shadow: none;
     width: 48px;
+    color: inherit;
+  }
+  @media only screen and (max-width: 500px) {
+    div {
+      grid-column-start: 1;
+      grid-column-end: 4;
+    }
   }
 </style>
