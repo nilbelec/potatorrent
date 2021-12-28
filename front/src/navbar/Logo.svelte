@@ -12,6 +12,14 @@
   onMount(loadVersion);
 </script>
 
+<div>
+  <img src="/public/img/logo.png" alt="Potatorrent logo" />
+  potatorrent
+  {#if version}
+    <span in:fly={{ y: -100 }} class="version">{version.version}</span>
+  {/if}
+</div>
+
 <style>
   div {
     display: flex;
@@ -35,12 +43,23 @@
     padding: 2px 6px;
     background-color: #dc3545;
   }
-</style>
 
-<div>
-  <img src="/public/img/logo.png" alt="Potatorrent logo" />
-  potatorrent
-  {#if version}
-    <span in:fly={{ y: -100 }} class="version">{version.version}</span>
-  {/if}
-</div>
+  @media only screen and (max-width: 700px) {
+    div {
+      font-size: 1.3rem;
+    }
+
+    img {
+      height: 2.4rem;
+      margin-right: 0.1rem;
+    }
+    .version {
+      font-size: 0.6rem;
+      margin-bottom: -28px;
+      margin-left: -16px;
+      color: #fff;
+      padding: 2px 6px;
+      background-color: #dc3545;
+    }
+  }
+</style>

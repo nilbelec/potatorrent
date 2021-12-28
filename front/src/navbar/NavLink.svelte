@@ -2,6 +2,7 @@
   import { Link } from "svelte-routing";
 
   export let to = "";
+  export let onClick;
 
   function getProps({ location, href, isPartiallyCurrent, isCurrent }) {
     const isActive = href === "/" ? isCurrent : isPartiallyCurrent || isCurrent;
@@ -13,6 +14,6 @@
   }
 </script>
 
-<Link {to} {getProps}>
+<Link {to} {getProps} on:click={onClick}>
   <slot />
 </Link>

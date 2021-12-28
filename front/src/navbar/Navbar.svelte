@@ -2,7 +2,7 @@
   import Logo from "./Logo.svelte";
   import NavMenu from "./NavMenu.svelte";
   import Icon from "svelte-awesome";
-  import { bars, arrowLeft } from "svelte-awesome/icons";
+  import { bars, times } from "svelte-awesome/icons";
   import { fly } from "svelte/transition";
   import NavLink from "./NavLink.svelte";
 
@@ -11,24 +11,27 @@
 
 <header>
   {#if show}
-    <div transition:fly={{ x: -200, duration: 600 }} class="dropdown">
+    <div
+      transition:fly={{ y: -200, duration: 600, opacity: 1 }}
+      class="dropdown"
+    >
       <ul>
         <li class="hide">
-          <NavLink to={"/"}>Inicio</NavLink>
+          <NavLink to={"/"} onClick={() => (show = false)}>Inicio</NavLink>
         </li>
         <li class="hide">
-          <NavLink to={"/searches"}>Búsquedas Programadas</NavLink>
+          <NavLink to={"/searches"} onClick={() => (show = false)}>Búsquedas Programadas</NavLink>
         </li>
         <li class="hide">
-          <NavLink to={"/configuration"}>Configuración</NavLink>
+          <NavLink to={"/configuration"} onClick={() => (show = false)}>Configuración</NavLink>
         </li>
       </ul>
     </div>
   {/if}
   <nav>
     <div class="hide">
-      <button type="button" on:click={() => (show = !show)}>
-        <Icon data={show ? arrowLeft : bars} scale="2" />
+      <button type="button" on:click|preventDefault={() => (show = !show)}>
+        <Icon data={show ? times : bars} scale="2" />
       </button>
     </div>
     <Logo />
@@ -58,6 +61,7 @@
     justify-content: space-between;
     display: flex;
     padding: 0 0.5rem;
+    background-color: white;
   }
   .hide {
     line-height: 1;
@@ -68,12 +72,16 @@
   .dropdown {
     position: absolute;
     top: 100%;
+    width: 100%;
     background-color: white;
-    box-shadow: 0.3rem 0.3rem 0.4rem 0.2rem rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -0.4rem 0.9rem 0.2rem rgba(0, 0, 0, 0.5);
+    z-index: -1;
+    opacity: 0.9;
   }
   button {
     box-shadow: none;
     border: none;
+    width: 40px;
   }
 
   button:active,
